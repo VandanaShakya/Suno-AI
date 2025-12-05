@@ -19,7 +19,7 @@ function App() {
     // Loader shown here during initial mount
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 200);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);

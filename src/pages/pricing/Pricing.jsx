@@ -5,9 +5,8 @@ import CreditSection from './CreditsSection';
 const Pricing = () => {
   return (
  <>
- <div className="relative min-h-screen w-full overflow-hidden bg-gray-900/90 flex items-center justify-center">
+ <div className="relative min-h-screen w-full overflow-hidden bg-black flex items-center justify-center">
       <div 
-        // ADDED: top-1/2 left-1/4 to ensure a starting visible position.
         className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 
                    h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] rounded-full filter blur-3xl opacity-60 **mix-blend-screen** transition-all duration-1000 ease-in-out bubble-1" 
         style={{ 
@@ -19,17 +18,14 @@ const Pricing = () => {
 
       {/* Bubble 2: Orange/Yellow */}
       <div 
-        // ADDED: bottom-1/4 right-1/4 to ensure a starting visible position.
-        className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 
+         className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 
                    h-[350px] w-[350px] sm:h-[450px] sm:w-[450px] rounded-full filter blur-3xl opacity-60 **mix-blend-screen** transition-all duration-1000 ease-in-out bubble-2" 
         style={{ 
-          // High saturation gradient
-          background: 'radial-gradient(circle, rgba(255, 165, 0, 0.9) 0%, rgba(255, 255, 0, 0.7) 100%)',
+           background: 'radial-gradient(circle, rgba(255, 165, 0, 0.9) 0%, rgba(255, 255, 0, 0.7) 100%)',
           willChange: 'transform'
         }}
       ></div>
-{/* Heading is assumed to be above this */}
-<div className="relative z-10 text-center mt-6 px-4 sm:px-0">
+ <div className="relative z-10 text-center mt-6 px-4 sm:px-0">
   <p className="max-w-3xl mx-auto text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
     Simple, flexible pricing — designed for creators and studios.
     Choose a plan that fits your workflow and scale up as you grow.

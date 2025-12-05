@@ -6,7 +6,7 @@ const ContactUs = () => {
   return (
     <>
       {/* hero section */}
-      <div className="relative min-h-screen w-full overflow-hidden bg-gray-900/90 flex items-center justify-center">
+      <div className="relative min-h-screen w-full overflow-hidden bg-black flex items-center justify-center">
       <div 
         // ADDED: top-1/2 left-1/4 to ensure a starting visible position.
         className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 
