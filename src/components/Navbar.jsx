@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const NAV_ITEMS = [
   { name: 'Home', href: '/' },
-  { name: 'About', href: '#about' },
+  { name: 'About', href: '/about' },
   { name: 'Pricing', href: '/pricing' },
   { name: 'Help', href: '#help' },
   { name: 'Contact Us', href: '/contact-us' },
@@ -25,7 +25,7 @@ const Navbar = ({ open, setOpen }) => {
 
   return (
     <header className="fixed top-0 left-0 w-full z-[70] bg-black font-['Inter',_sans-serif]">
-      <nav className="w-[95%] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav className="w-full max-w-[80%] mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">

@@ -5,7 +5,7 @@ import CreditSection from './CreditsSection';
 const Pricing = () => {
   return (
  <>
- <div className="relative min-h-screen w-full overflow-hidden bg-black flex items-center justify-center">
+ <div className="relative min-h-screen w-full overflow-hidden bg-[#131B27] flex items-center justify-center">
       <div 
         className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 
                    h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] rounded-full filter blur-3xl opacity-60 **mix-blend-screen** transition-all duration-1000 ease-in-out bubble-1" 
@@ -25,7 +25,9 @@ const Pricing = () => {
           willChange: 'transform'
         }}
       ></div>
- <div className="relative z-10 text-center mt-6 px-4 sm:px-0">
+
+
+ <div className="relative z-10 text-center mt-6 px-4 sm:px-0 ">
   <p className="max-w-3xl mx-auto text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
     Simple, flexible pricing — designed for creators and studios.
     Choose a plan that fits your workflow and scale up as you grow.
@@ -67,7 +69,7 @@ const Pricing = () => {
     </div>
     {/* pricing information */}
 
-    <div id="pricing" className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-12 ">
+    <div id="pricing" className="min-h-screen bg-[#131B27] flex flex-col items-center justify-center px-4 py-12 ">
     <div className="text-center mb-12 px-4">
   <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
     Suno AI Pricing Plans

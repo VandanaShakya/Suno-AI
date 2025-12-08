@@ -5,15 +5,15 @@ import { creditPacks } from '../../data/data';
 const CreditSection = () => {
   const primaryColor = '#43D9FA';
   const secondaryColor = '#FA1CD4';
-  const neutralBackground = '#121212';
-  const cardBackground = '#1f1f1f';
+  const neutralBackground = '#131B27';
+  const cardBackground = '#131B27';
   const textColor = '#ffffff';
 
  
 
   return (
     <div
-      className="min-h-screen p-4 md:p-10 lg:p-16"
+      className=" p-4 md:p-10 lg:p-16"
       style={{ backgroundColor: neutralBackground, color: textColor, fontFamily: 'Inter, sans-serif' }}
     >
       <div className="max-w-7xl mx-auto py-8">

@@ -17,7 +17,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-black text-white font-sans w-full">
+    <footer className="bg-[#131B27] text-white font-sans w-full">
       
       {/* 1. Subscription Section */}
       <div className="w-full border-b border-gray-700">

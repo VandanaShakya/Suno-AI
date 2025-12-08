@@ -1,3 +1,16 @@
+import {
+  FiCpu,
+  FiZap,
+  FiHeadphones,
+  FiGlobe,
+  FiShield,
+  FiMusic,
+  FiMic,
+  FiUser
+} from "react-icons/fi";
+import images from "../assets/images";
+
+
 export const cardsData = [
   {
     type: "large-text",
@@ -323,3 +336,116 @@ title: 'Contact Us',
 content: 'If you have questions or requests regarding this policy, contact support@suno.ai.',
 },
 ];
+
+
+export const features = [
+  {
+    icon: FiCpu,
+    title: "Advanced AI",
+    description:
+      "State-of-the-art neural networks trained on millions of songs to understand music theory and composition.",
+  },
+  {
+    icon: FiZap,
+    title: "Instant Generation",
+    description: "Create full tracks in seconds. No waiting, no complex setups.",
+  },
+  {
+    icon: FiHeadphones,
+    title: "Studio Quality",
+    description:
+      "Professional-grade audio output at 320kbps. Ready for streaming or production.",
+  },
+  {
+    icon: FiGlobe,
+    title: "Any Genre",
+    description:
+      "From ambient to electronic, classical to hip-hop. Our AI understands every style.",
+  },
+  {
+    icon: FiShield,
+    title: "Royalty Free",
+    description:
+      "Full commercial rights to everything you create. Use your music anywhere.",
+  },
+  {
+    icon: FiMusic,
+    title: "Endless Variations",
+    description:
+      "Generate unlimited variations of any track. Find the perfect version.",
+  },
+];
+
+export const stats = [
+  { value: '10M+', label: 'Songs Created' },
+  { value: '500K+', label: 'Active Users' },
+  { value: '50+', label: 'Music Styles' },
+  { value: '99.9%', label: 'Uptime' },
+];
+
+
+
+export const aiVoices = [
+  {
+    id: 1,
+    name: "Alex (The Narrator)",
+    style: "Deep, clear, and professional",
+    icon: FiMic,
+  },
+  {
+    id: 2,
+    name: "Sophia (The Storyteller)",
+    style: "Warm, expressive, and engaging",
+    icon: FiUser,
+  },
+  {
+    id: 3,
+    name: "Max (The Robot)",
+    style: "Synthetic, fast-paced, and energetic",
+    icon: FiHeadphones,
+  },
+  {
+    id: 4,
+    name: "Lena (The Assistant)",
+    style: "Smooth, friendly, and conversational",
+    icon: FiUser,
+  },
+];
+
+export const reelsData = [
+    {
+      id: 1,
+      username: '@devianibza',
+      label: 'producers',
+      imageAlt: 'A man speaking into a microphone with studio equipment in the background.',
+      imageUrl: images.feature1
+    },
+    {
+      id: 2,
+      username: '@techguyver',
+      label: "it's the best numero UNO",
+      imageAlt: 'Close-up of a hand pointing at a laptop screen showing music production software.',
+      imageUrl: images.feature2
+    },
+    {
+      id: 3,
+      username: '@timbaland',
+      label: 'grid-cols 2 opacity X X B',
+      imageAlt: 'A man in a black shirt working on a computer screen.',
+      imageUrl: images.feature3
+    },
+    {
+      id: 4,
+      username: '@spellspand',
+      label: 'new sample wades X X B B',
+      imageAlt: 'A man wearing a green hat working with music hardware controllers.',
+      imageUrl: images.feature4
+    },
+    {
+      id: 5,
+      username: '@nickfoats',
+      label: 'the most insane',
+      imageAlt: 'A man looking up with text overlay on his face.',
+      imageUrl: images.feature5
+    },
+  ];
