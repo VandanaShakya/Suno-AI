@@ -13,7 +13,7 @@ const Footer = () => {
     { name: 'Community Guidelines', href: '/community-guidlines' },
     { name: 'Terms of Service', href: '/terms-of-services' },
     { name: 'Privacy Policy', href: '/privacy-policy' },
-    { name: 'FAQs', href: '#' }
+    { name: 'FAQs', href: '/faqs' }
   ];
 
   return (

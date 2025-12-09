@@ -11,6 +11,9 @@ import Loader from "./components/Loader";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
 import TermsOfServices from "./pages/TermsOfServices";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Help from "./pages/Help";
+import Faqs from "./pages/Faqs";
+import UserProfile from "./pages/userProfile/UserProfile";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -19,7 +22,7 @@ function App() {
     // Loader shown here during initial mount
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -56,6 +59,9 @@ function App() {
                 <Route path="/community-guidlines" element={<CommunityGuidelines/>}/>
                 <Route path="/terms-of-services" element={<TermsOfServices/>}/>
                 <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
+                <Route path="/help" element={<Help/>}/>
+                <Route path="/faqs" element={<Faqs/>}/>
+                <Route path="/user-profile" element={<UserProfile/>}/>
               </Routes>
             </main>
             <Footer />

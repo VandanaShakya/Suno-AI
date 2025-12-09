@@ -6,8 +6,9 @@ import feature4 from './home/feature4.jpg'
 import feature5 from './home/feature5.jpg'
 import feature6 from './home/feature6.jpg'
 import feature7 from './home/feature7.jpg'
+import mobileBg from './home/hero-bg.png'
 
-import sunoHeroImage from './home/suno-hero-image.png'
+import sunoHeroImage from './home/suno2.png'
 
 const images = {
 
@@ -20,5 +21,6 @@ const images = {
     feature6,
 feature7,
 sunoHeroImage,
+mobileBg
 }
 export default images

@@ -126,89 +126,84 @@ const Home = () => {
   return (
     <div className="overflow-x-hidden">
 
-      <motion.section
-        className="min-h-screen bg-[#0E141E] flex items-center justify-center p-4 sm:p-8"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-      >
+  <motion.section
+  className="relative min-h-screen flex items-center justify-center px-4 py-6 md:p-8 overflow-hidden"
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6, ease: 'easeOut' }}
+>
+  {/* BACKGROUND IMAGE FOR MOBILE */}
+  <div className="absolute inset-0 bg-black opacity-30 z-10 block md:hidden"></div>
+  <img
+    src={images.mobileBg}
+    alt="Background Mobile"
+    className="absolute inset-0 w-full h-full object-cover -z-10 block md:hidden"
+  />
 
-        {/* Centering container and Grid Layout for content and image */}
-        <div className="max-w-[80%] mx-auto w-full">
+  {/* BACKGROUND IMAGE FOR TABLET/DESKTOP */}
+  <img
+    src={images.sunoHeroImage}
+    alt="Background Desktop"
+    className="absolute inset-0 w-full h-full object-cover -z-10 hidden md:block"
+    style={{ objectPosition: '65% center' }}
+  />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+  {/* Centering container and Grid Layout */}
+  <div className="w-full max-w-[1200px] mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
 
-            <motion.div
-              className="text-white pt-10 pb-12 md:py-20 order-2 md:order-1"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
+      {/* LEFT COLUMN: input first (so on mobile it appears above text), then text */}
+      <div className="flex flex-col gap-6 order-1 md:order-1 items-center md:items-start text-center md:text-left">
+        {/* INPUT BLOCK — centered on mobile, aligned left on md+ */}
+        <div className="w-full md:max-w-xl">
+          <div className="relative mx-auto md:mx-0">
+            <input
+              type="text"
+              placeholder="Describe the track you want..."
+              className="w-full pr-36 px-5 py-4 rounded-xl text-base bg-[#1F2531] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A146EA]"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+            />
+
+            <button
+              className="absolute right-1 top-1/2 -translate-y-1/2 px-5 py-3 rounded-xl text-sm md:text-base font-semibold transition-transform transform hover:scale-[1.03] shadow-lg"
+              style={{ background: "linear-gradient(90deg, #A146EA, #4B7DDA)", color: "white" }}
+              onClick={handleGenerate}
+              disabled={loading || !prompt}
             >
-
-              {/* Primary Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4">
-                Create Stunning Music Instantly. <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(90deg, #A146EA, #4B7DDA)" }}>Type, Generate, Enjoy</span>
-              </h1>
-
-              <p className="text-lg text-gray-400 mb-10 max-w-xl">
-                Turn your ideas into high-quality music tracks in seconds with our AI-powered music generator. No experience needed—just type and listen.
-              </p>
-
-
-              <div className="max-w-lg mx-auto">
-                <div className="relative flex items-center">
-                  {/* Input */}
-                  <input
-                    type="text"
-                    placeholder="Describe the track you want..."
-                    className="w-full pr-36 px-6 py-4 rounded-xl text-base bg-[#1F2531] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A146EA]"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                  />
-
-                  {/* Generate Button inside input */}
-                  <button
-                    className="absolute right-1 top-1/2 -translate-y-1/2 px-6 py-3 rounded-xl text-base font-semibold transition-transform transform hover:scale-[1.03] shadow-lg"
-                    style={{ background: "linear-gradient(90deg, #A146EA, #4B7DDA)", color: "white" }}
-                    onClick={handleGenerate}
-                    disabled={loading || !prompt}
-                  >
-                    {loading ? "Generating..." : "Generate Now"}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* RIGHT SIDE: Image/Visual Space */}
-            <motion.div
-              className="relative h-[300px] md:h-auto md:min-h-[500px] w-full flex items-center justify-center order-1 md:order-2"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
-            >
-
-              <div className="w-full h-full">
-                <img
-                  src={images.sunoHeroImage}
-                  alt="AI Brain generating music waveforms"
-                  className="w-full h-full object-contain"
-                />
-
-                <div className="absolute inset-0 pointer-events-none opacity-50"
-                  style={{
-                    background: 'radial-gradient(circle at center, rgba(75, 125, 218, 0.15) 0%, transparent 70%)',
-                    zIndex: 0
-                  }}
-                />
-              </div>
-
-            </motion.div>
-
+              {loading ? "Generating..." : "Generate Now"}
+            </button>
           </div>
         </div>
-      </motion.section>
+
+        {/* TEXT BLOCK */}
+        <motion.div
+          className="text-white pt-2 md:pt-10 pb-4 md:pb-12 max-w-xl opacity-100 z-30"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-3 md:mb-4">
+            Create Stunning Music Instantly.
+            <span
+              className="text-transparent bg-clip-text ml-2"
+              style={{ backgroundImage: "linear-gradient(90deg, #A146EA, #4B7DDA)" }}
+            >
+              Type, Generate, Enjoy
+            </span>
+          </h1>
+
+          <p className="text-base md:text-lg text-gray-400 mb-6">
+            Turn your ideas into high-quality music tracks in seconds with our AI-powered music generator.
+          </p>
+        </motion.div>
+      </div>
+
+    </div>
+  </div>
+</motion.section>
+
 
       {/* // second section // */}
       {/* <section className="min-h-screen bg-black text-white">
@@ -262,7 +257,7 @@ transition duration-300 transform hover:scale-[1.03]">              DISCOVER
 
       {/* home third section */}
 
-      <div className='w-full bg-black'>
+     
         {/* <div className="relative w-full h-[60vh] md:h-[75vh] overflow-hidden rounded-xl">
 
           <div className="absolute inset-0 bg-black/40" />
@@ -456,21 +451,33 @@ transition duration-300 transform hover:scale-[1.03]">              DISCOVER
   </div>
 </div> */}
 
-        <section className="px-4 sm:px-6 py-16 bg-[#131B27] min-h-screen">
-  <div className="relative flex flex-col items-center justify-center text-center px-4 w-full max-w-[80%] m-auto">
-    <h1 className="text-white font-bold text-3xl md:text-5xl lg:text-6xl leading-tight drop-shadow-lg">
-      Experience the Future of <span className="bg-gradient-to-r from-[#A146EA] to-[#4B7DDA] bg-clip-text text-transparent">
-  AI-Powered Music Creation
-</span>
+        <section className="px-4 py-16 bg-[#131B27] min-h-screen">
+  <div className="relative flex flex-col items-center justify-center text-center 
+                px-2 sm:px-4 w-full max-w-[95%] md:max-w-[80%] mx-auto">
 
-    </h1>
+  <h1
+    className="text-white font-bold text-2xl sm:text-3xl md:text-5xl lg:text-6xl 
+               leading-snug md:leading-tight drop-shadow-lg 
+               text-left md:text-center"
+  >
+    Experience the Future of{" "}
+    <span className="bg-gradient-to-r from-[#A146EA] to-[#4B7DDA] bg-clip-text text-transparent">
+      AI-Powered Music Creation
+    </span>
+  </h1>
 
-    <p className="text-white/90 mt-4 text-base md:text-lg lg:text-xl max-w-2xl drop-shadow">
-      Discover next-generation AI music generators that transform your ideas into complete songs
-      within seconds. From melody to lyrics, create professional-grade music effortlessly and
-      unlock your creative potential.
-    </p>
-  </div>
+  <p
+    className="text-white/90 mt-3 md:mt-4 text-sm sm:text-base md:text-lg lg:text-xl 
+               max-w-xl md:max-w-2xl drop-shadow 
+               text-left md:text-center"
+  >
+    Discover next-generation AI music generators that transform your ideas into complete songs
+    within seconds. From melody to lyrics, create professional-grade music effortlessly and
+    unlock your creative potential.
+  </p>
+
+</div>
+
 
 
   {/* Voice Cards Grid */}
@@ -581,108 +588,147 @@ transition duration-300 transform hover:scale-[1.03]">              DISCOVER
         </div>
 
         {/* Call to Action Button */}
-        <div className="mt-12 flex justify-center">
-          <button
-            className="px-10 py-4 text-lg font-bold text-white rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
-            // Applying the gradient using the specified colors
-            style={{
-              background: 'linear-gradient(90deg, #A146EA, #4B7DDA)',
-            }}
-          >
-            Sign up for free
-          </button>
-        </div>
+      <div className="mt-6 sm:mt-10 flex justify-center w-full">
+  <button
+    className="
+      px-6 sm:px-10 
+      py-3 sm:py-4 
+      text-base sm:text-lg 
+      font-bold text-white 
+      rounded-full shadow-lg 
+      transition-all duration-300 
+      transform hover:scale-105 
+      w-auto
+    "
+    style={{
+      background: "linear-gradient(90deg, #A146EA, #4B7DDA)",
+    }}
+  >
+    Sign up for free
+  </button>
+</div>
+
       </div>
     </section>
 </section>
 
 
-      </div>
 
 
       {/* pricing section */}
       <Pricing />
 
 
-      <section className="bg-[#131B27] py-16">
-      <div className="mx-auto w-[80%] max-w-7xl px-4 sm:px-6 lg:px-8">
+     <section className="bg-[#131B27] py-12 sm:py-16">
+      <div className="mx-auto w-[90%] md:w-[85%] lg:w-[80%] max-w-7xl px-2 sm:px-4">
         {/* Main Heading */}
-        <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-12 text-center">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 sm:mb-12 text-center">
           Everything you need to <span className="text-[#A146EA]">explore</span> and get inspired
         </h2>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {/* Card 1 */}
+          <motion.div
+            className="p-4 sm:p-6 md:p-6 rounded-2xl bg-[#131B27] border-[1px] relative overflow-hidden"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45, ease: "easeOut" }}
+            style={{
+              boxShadow: "0 8px 30px rgba(17, 24, 39, 0.6)",
+              borderImageSlice: 1,
+              borderImageSource: "linear-gradient(90deg,#7c3aed,#06b6d4)"
+            }}
+          >
+            <div className="absolute inset-0 rounded-xl pointer-events-none"
+                 style={{ background: 'linear-gradient(180deg, rgba(124,58,237,0.02), rgba(6,182,212,0.01))' }} />
+            <div className="relative z-10">
+              <h3 className="text-xl sm:text-2xl font-semibold text-white mb-3">
+                <span className="text-[#A146EA]">10</span> Daily Inspirations
+              </h3>
+              <p className="text-sm sm:text-base text-gray-400 mb-5">
+                Dive into new ideas instantly. Fresh prompts, concepts, and thought-starters daily to fuel your next creation. Free forever — no signup.
+              </p>
 
-          {/* Card 1: Daily Inspiration */}
-       {/* Card 1: Daily Inspirations */}
-<motion.div
-  className="p-6 bg-[#131B27] rounded-xl shadow-2xl border border-gray-600 transition-all duration-300 hover:shadow-purple-500/50"
-  initial={{ opacity: 0, y: 18 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.45, ease: 'easeOut' }}
->
-  <h3 className="text-2xl font-semibold text-white mb-4">
-    <span className="text-[#A146EA]">10</span> Daily Inspirations
-  </h3>
-  <p className="text-gray-400 mb-6">
-    Dive into new ideas instantly. Get fresh prompts, concepts, and thought-starters daily to fuel your next creation. Free forever, no registration needed.
-  </p>
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#A146EA]/10 rounded-full flex items-center justify-center border-2 border-[#A146EA]">
+                <Sparkles className="w-6 h-6 text-[#A146EA]" />
+              </div>
+            </div>
 
-  <div className="w-16 h-16 bg-[#A146EA]/20 rounded-full flex items-center justify-center border-2 border-[#A146EA]">
-    <Sparkles className="w-8 h-8 text-[#A146EA]" />
-  </div>
-</motion.div>
+            {/* Hover overlay effect */}
+            <div className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 hover:opacity-100"
+                 style={{ background: "linear-gradient(180deg, rgba(124,58,237,0.03), rgba(6,182,212,0.02))" }} />
+          </motion.div>
 
-{/* Card 2: AI Idea Generator */}
-<motion.div
-  className="p-6 bg-[#131B27] rounded-xl shadow-2xl border border-gray-600 transition-all duration-300 hover:shadow-blue-500/50"
-  initial={{ opacity: 0, y: 18 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.45, delay: 0.05, ease: 'easeOut' }}
->
-  <h3 className="text-2xl font-semibold text-white mb-4">
-    Free <span className="text-[#4B7DDA]">AI</span> Idea Generator
-  </h3>
-  <p className="text-gray-400 mb-6">
-    Unleash creativity with the market-leading AI generator. Explore millions of curated themes, styles, and data points—from trending topics to deep-dive research.
-  </p>
+          {/* Card 2 */}
+          <motion.div
+            className="p-4 sm:p-6 md:p-6 rounded-xl bg-[#131B27] border-[1px] relative overflow-hidden"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45, delay: 0.05, ease: "easeOut" }}
+            style={{
+              boxShadow: "0 8px 30px rgba(17, 24, 39, 0.6)",
+              borderImageSlice: 1,
+              borderImageSource: "linear-gradient(90deg,#4B7DDA,#7c3aed)"
+            }}
+          >
+            <div className="relative z-10">
+              <h3 className="text-xl sm:text-2xl font-semibold text-white mb-3">
+                Free <span className="text-[#4B7DDA]">AI</span> Idea Generator
+              </h3>
+              <p className="text-sm sm:text-base text-gray-400 mb-4">
+                Unleash creativity with a market-leading AI generator. Explore curated themes, trending prompts, and style variations to kickstart any project.
+              </p>
 
-  <div className="relative h-32 w-full overflow-hidden rounded-lg bg-gray-800 p-2 flex items-center justify-center">
-    <Zap className="w-12 h-12 text-[#4B7DDA] opacity-80" />
-    <div className="absolute top-0 right-0 w-8 h-8 bg-[#4B7DDA] rounded-full blur-sm"></div>
-    <div className="absolute bottom-0 left-0 w-10 h-10 bg-[#A146EA] rounded-full blur-sm"></div>
-  </div>
-</motion.div>
+              <div className="relative h-40 sm:h-44 w-full overflow-hidden rounded-lg bg-gray-800 p-2 flex items-center justify-center">
+                <img
+                  src={images?.feature7}
+                  alt="feature"
+                  className="object-cover w-full h-full rounded-md"
+                />
+              </div>
+            </div>
 
-{/* Card 3: Share Your Journey */}
-<motion.div
-  className="p-6 bg-[#131B27] rounded-xl shadow-2xl border border-gray-600 transition-all duration-300 hover:shadow-purple-500/50"
-  initial={{ opacity: 0, y: 18 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.45, delay: 0.1, ease: 'easeOut' }}
->
-  <h3 className="text-2xl font-semibold text-white mb-4">
-    Share your <span className="text-[#A146EA]">Journey</span> with the world
-  </h3>
-  <p className="text-gray-400 mb-6">
-    Connect your creations with a global community. Share your progress, get feedback, and turn your inner spark into a movement. Your next project can inspire millions.
-  </p>
+            <div className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 hover:opacity-100"
+                 style={{ background: "linear-gradient(180deg, rgba(75,125,218,0.03), rgba(124,58,237,0.02))" }} />
+          </motion.div>
 
-  <div className="relative h-16 w-full flex items-center justify-end">
-    <div className="absolute right-0 top-0 w-14 h-14 bg-[#A146EA] opacity-70 rounded-lg transform rotate-6 flex items-center justify-center">
-      <Globe className="w-6 h-6 text-white" />
-    </div>
-    <div className="absolute right-4 top-2 w-16 h-16 bg-[#4B7DDA] rounded-lg transform -rotate-3 flex items-center justify-center shadow-lg">
-      <p className="text-white font-bold text-sm">5k</p>
-    </div>
-  </div>
-</motion.div>
+          {/* Card 3 */}
+          <motion.div
+            className="p-4 sm:p-6 md:p-6 rounded-xl bg-[#131B27] border-[1px] relative overflow-hidden"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45, delay: 0.1, ease: "easeOut" }}
+            style={{
+              boxShadow: "0 8px 30px rgba(17, 24, 39, 0.6)",
+              borderImageSlice: 1,
+              borderImageSource: "linear-gradient(90deg,#7c3aed,#4B7DDA)"
+            }}
+          >
+            <div className="relative z-10">
+              <h3 className="text-xl sm:text-2xl font-semibold text-white mb-3">
+                Share your <span className="text-[#A146EA]">Journey</span> with the world
+              </h3>
+              <p className="text-sm sm:text-base text-gray-400 mb-4">
+                Connect your creations with a global community — share progress, get feedback, and turn ideas into movements.
+              </p>
 
+              <div className="relative h-20 sm:h-24 w-full flex items-center justify-end">
+                <div className="absolute right-0 top-0 w-12 sm:w-14 h-12 sm:h-14 bg-[#A146EA] opacity-75 rounded-lg transform rotate-3 flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-white" />
+                </div>
+                <div className="absolute right-6 top-3 w-14 h-14 bg-[#4B7DDA] rounded-lg transform -rotate-3 flex items-center justify-center shadow-lg">
+                  <p className="text-white font-bold text-sm">5k</p>
+                </div>
+              </div>
+            </div>
 
+            <div className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 hover:opacity-100"
+                 style={{ background: "linear-gradient(180deg, rgba(124,58,237,0.03), rgba(75,125,218,0.02))" }} />
+          </motion.div>
         </div>
       </div>
     </section>
