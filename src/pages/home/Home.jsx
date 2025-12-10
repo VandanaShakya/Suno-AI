@@ -133,7 +133,7 @@ const Home = () => {
   transition={{ duration: 0.6, ease: 'easeOut' }}
 >
   {/* BACKGROUND IMAGE FOR MOBILE */}
-<div className="absolute inset-0 bg-black opacity-30 z-30 block md:hidden pointer-events-none"></div>
+  <div className="absolute inset-0 bg-black opacity-30 z-30 block md:hidden pointer-events-none"></div>
   <img
     src={images.mobileBg}
     alt="Background Mobile"
@@ -145,45 +145,23 @@ const Home = () => {
     src={images.sunoHeroImage}
     alt="Background Desktop"
     className="absolute inset-0 w-full h-full object-cover -z-10 hidden md:block"
-    style={{ objectPosition: '65% center' }}
+    style={{ objectPosition: "65% center" }}
   />
 
   {/* Centering container and Grid Layout */}
   <div className="w-full max-w-[1200px] mx-auto">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
 
-      {/* LEFT COLUMN: input first (so on mobile it appears above text), then text */}
+      {/* LEFT COLUMN: TEXT FIRST, then INPUT BELOW */}
       <div className="flex flex-col gap-6 order-1 md:order-1 items-center md:items-start text-center md:text-left">
-        {/* INPUT BLOCK — centered on mobile, aligned left on md+ */}
-        <div className="w-full md:max-w-xl">
-         <div className="relative mx-auto md:mx-0 z-30">
-  <input
-    type="text"
-    placeholder="Describe the track you want..."
-    className="w-full pr-28 md:pr-36 px-4 md:px-5 py-3 md:py-4 rounded-lg md:rounded-xl text-base bg-[#1F2531] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A146EA]"
-    value={prompt}
-    onChange={(e) => setPrompt(e.target.value)}
-  />
-
-  <button
-    className="absolute right-1 top-1/2 -translate-y-1/2 px-3 md:px-5 py-2 md:py-3 rounded-lg md:rounded-xl text-sm md:text-base font-semibold transition-transform transform hover:scale-[1.03] shadow-lg"
-    style={{ background: "linear-gradient(90deg, #A146EA, #4B7DDA)", color: "white" }}
-    onClick={handleGenerate}
-    disabled={loading || !prompt}
-  >
-    {loading ? "Generating..." : "Generate Now"}
-  </button>
-</div>
-
-        </div>
 
         {/* TEXT BLOCK */}
         <motion.div
-          className="text-white pt-2 md:pt-10 pb-4 md:pb-12 max-w-xl opacity-100 z-30"
+          className="text-white pt-2 md:pt-10 max-w-xl opacity-100 z-30"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight mb-3 md:mb-4">
             Create Stunning Music Instantly.
@@ -199,11 +177,35 @@ const Home = () => {
             Turn your ideas into high-quality music tracks in seconds with our AI-powered music generator.
           </p>
         </motion.div>
+
+        {/* INPUT BLOCK BELOW TEXT */}
+        <div className="w-full md:max-w-xl">
+          <div className="relative mx-auto md:mx-0 z-30">
+            <input
+              type="text"
+              placeholder="Describe the track you want..."
+              className="w-full pr-28 md:pr-36 px-4 md:px-5 py-3 md:py-4 rounded-lg md:rounded-xl text-base bg-[#1F2531] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A146EA]"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+            />
+
+            <button
+              className="absolute right-1 top-1/2 -translate-y-1/2 px-3 md:px-5 py-2 md:py-3 rounded-lg md:rounded-xl text-sm md:text-base font-semibold transition-transform transform hover:scale-[1.03] shadow-lg"
+              style={{ background: "linear-gradient(90deg, #A146EA, #4B7DDA)", color: "white" }}
+              onClick={handleGenerate}
+              disabled={loading || !prompt}
+            >
+              {loading ? "Generating..." : "Generate Now"}
+            </button>
+          </div>
+        </div>
+
       </div>
 
     </div>
   </div>
 </motion.section>
+
 
 
       {/* // second section // */}
