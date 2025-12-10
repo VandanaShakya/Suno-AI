@@ -18,43 +18,6 @@ const Footer = () => {
 
   return (
     <footer className="bg-[#131B27] text-white font-sans w-full">
-      
-      {/* 1. Subscription Section */}
-      <div className="w-full border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 py-16">
-          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end">
-            
-            {/* Text */}
-            <div className="max-w-xl mb-10 lg:mb-0">
-              <h2 className="text-4xl font-semibold mb-4 leading-tight">
-                Subscribe for latest updates & insights
-              </h2>
-              <p className="text-gray-400">
-                Pacific hake false trevally queen parrotfish black prickleback
-                mosshead warbonnet sweeper! Greenling sleeper.
-              </p>
-            </div>
-
-            {/* Email Form */}
-            <div className="w-full lg:w-96">
-              <form className="flex border-b border-gray-500 pb-2">
-                <input
-                  type="email"
-                  placeholder="Email"
-                  className="w-full bg-transparent text-white placeholder-gray-500 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  className="ml-4 p-2 hover:text-gray-400 transition-colors duration-200"
-                >
-                  <ArrowRight className="w-6 h-6" />
-                </button>
-              </form>
-            </div>
-
-          </div>
-        </div>
-      </div>
 
       {/* 2. Footer Main Section */}
       <div className="w-full">
@@ -64,7 +27,7 @@ const Footer = () => {
             {/* Logo / Social */}
             <div>
               <div className="text-3xl font-bold mb-6 tracking-wider">
-                AIGENCY
+                Suno
               </div>
               <div className="flex space-x-6">
                 <a href="#"><Facebook className="w-5 h-5 hover:text-gray-400" /></a>

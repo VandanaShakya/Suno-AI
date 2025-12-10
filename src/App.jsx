@@ -14,6 +14,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Help from "./pages/Help";
 import Faqs from "./pages/Faqs";
 import UserProfile from "./pages/userProfile/UserProfile";
+import SignIn from "./pages/signin/SignIn";
+import Signup from "./pages/signup/Signup";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -26,6 +28,7 @@ function App() {
 
     return () => clearTimeout(timer);
   }, []);
+
 
   return (
     <>
@@ -62,12 +65,16 @@ function App() {
                 <Route path="/help" element={<Help/>}/>
                 <Route path="/faqs" element={<Faqs/>}/>
                 <Route path="/user-profile" element={<UserProfile/>}/>
+                <Route path="/signin" element={<SignIn/>}/>
+                <Route path="/signup" element={<Signup/>}/>
               </Routes>
             </main>
+
             <Footer />
           </>
         )}
       </div>
+     
     </>
   );
 }

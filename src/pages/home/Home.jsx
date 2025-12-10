@@ -133,7 +133,7 @@ const Home = () => {
   transition={{ duration: 0.6, ease: 'easeOut' }}
 >
   {/* BACKGROUND IMAGE FOR MOBILE */}
-  <div className="absolute inset-0 bg-black opacity-30 z-10 block md:hidden"></div>
+<div className="absolute inset-0 bg-black opacity-30 z-30 block md:hidden pointer-events-none"></div>
   <img
     src={images.mobileBg}
     alt="Background Mobile"
@@ -156,24 +156,25 @@ const Home = () => {
       <div className="flex flex-col gap-6 order-1 md:order-1 items-center md:items-start text-center md:text-left">
         {/* INPUT BLOCK — centered on mobile, aligned left on md+ */}
         <div className="w-full md:max-w-xl">
-          <div className="relative mx-auto md:mx-0">
-            <input
-              type="text"
-              placeholder="Describe the track you want..."
-              className="w-full pr-36 px-5 py-4 rounded-xl text-base bg-[#1F2531] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A146EA]"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-            />
+         <div className="relative mx-auto md:mx-0 z-30">
+  <input
+    type="text"
+    placeholder="Describe the track you want..."
+    className="w-full pr-28 md:pr-36 px-4 md:px-5 py-3 md:py-4 rounded-lg md:rounded-xl text-base bg-[#1F2531] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A146EA]"
+    value={prompt}
+    onChange={(e) => setPrompt(e.target.value)}
+  />
 
-            <button
-              className="absolute right-1 top-1/2 -translate-y-1/2 px-5 py-3 rounded-xl text-sm md:text-base font-semibold transition-transform transform hover:scale-[1.03] shadow-lg"
-              style={{ background: "linear-gradient(90deg, #A146EA, #4B7DDA)", color: "white" }}
-              onClick={handleGenerate}
-              disabled={loading || !prompt}
-            >
-              {loading ? "Generating..." : "Generate Now"}
-            </button>
-          </div>
+  <button
+    className="absolute right-1 top-1/2 -translate-y-1/2 px-3 md:px-5 py-2 md:py-3 rounded-lg md:rounded-xl text-sm md:text-base font-semibold transition-transform transform hover:scale-[1.03] shadow-lg"
+    style={{ background: "linear-gradient(90deg, #A146EA, #4B7DDA)", color: "white" }}
+    onClick={handleGenerate}
+    disabled={loading || !prompt}
+  >
+    {loading ? "Generating..." : "Generate Now"}
+  </button>
+</div>
+
         </div>
 
         {/* TEXT BLOCK */}
@@ -489,7 +490,7 @@ transition duration-300 transform hover:scale-[1.03]">              DISCOVER
       return (
         <motion.div
           key={voice.id}
-          className="group relative bg-gradient-to-b from-[#4B7DDA]/20 to-[#A146EA]/20 border border-[#A146EA]/30 rounded-3xl p-6 flex flex-col justify-between hover:shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer"
+          className="group relative border border-[#A146EA]/30 rounded-3xl p-6 flex flex-col justify-between hover:shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer"
           onClick={() => togglePlay(voice.id)}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -630,10 +631,11 @@ transition duration-300 transform hover:scale-[1.03]">              DISCOVER
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Card 1 */}
           <motion.div
-            className="p-4 sm:p-6 md:p-6 rounded-2xl bg-[#131B27] border-[1px] relative overflow-hidden"
+            className="p-4 sm:p-6 md:p-6 rounded-2xl bg-[#131B27] border-[1px] relative overflow-hidden hover:-translate-y-2 transition-transform duration-300"
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            // whileHover={{ y: -8 }}  
             transition={{ duration: 0.45, ease: "easeOut" }}
             style={{
               boxShadow: "0 8px 30px rgba(17, 24, 39, 0.6)",
@@ -663,7 +665,7 @@ transition duration-300 transform hover:scale-[1.03]">              DISCOVER
 
           {/* Card 2 */}
           <motion.div
-            className="p-4 sm:p-6 md:p-6 rounded-xl bg-[#131B27] border-[1px] relative overflow-hidden"
+            className="p-4 sm:p-6 md:p-6 rounded-xl bg-[#131B27] border-[1px] relative overflow-hidden hover:-translate-y-2 transition-transform duration-300"
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -682,7 +684,7 @@ transition duration-300 transform hover:scale-[1.03]">              DISCOVER
                 Unleash creativity with a market-leading AI generator. Explore curated themes, trending prompts, and style variations to kickstart any project.
               </p>
 
-              <div className="relative h-40 sm:h-44 w-full overflow-hidden rounded-lg bg-gray-800 p-2 flex items-center justify-center">
+              <div className="relative h-40 sm:h-44 w-full overflow-hidden rounded-lg bg-gray-800 p-2 flex items-center justify-center hover:-translate-y-2 transition-transform duration-300">
                 <img
                   src={images?.feature7}
                   alt="feature"
@@ -697,7 +699,7 @@ transition duration-300 transform hover:scale-[1.03]">              DISCOVER
 
           {/* Card 3 */}
           <motion.div
-            className="p-4 sm:p-6 md:p-6 rounded-xl bg-[#131B27] border-[1px] relative overflow-hidden"
+            className="p-4 sm:p-6 md:p-6 rounded-xl bg-[#131B27] border-[1px] relative overflow-hidden hover:-translate-y-2 transition-transform duration-300"
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

@@ -33,12 +33,13 @@ const CreditSection = () => {
             _MUSIC GENERATION CREDITS
           </span>
         </p>
-        <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-8">
-          <span className="block">Simple and</span>
-          <span className="block">flexible.</span>
-          <span className="block text-gray-400 mt-4">Only pay for</span>
-          <span className="block text-gray-400">what you use.</span>
-        </h1>
+   <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold leading-tight mb-8">
+  <span className="block">Simple and</span>
+  <span className="block">flexible.</span>
+  <span className="block text-gray-400 mt-4">Only pay for</span>
+  <span className="block text-gray-400">what you use.</span>
+</h1>
+
         <p className="text-lg text-gray-400 max-w-md hidden lg:block">
           Generate unique music tracks powered by AI, perfect for content creation, game development, or personal projects.
         </p>

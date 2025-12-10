@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const NAV_ITEMS = [
   { name: 'Home', href: '/' },
@@ -58,14 +59,14 @@ const Navbar = ({ open, setOpen }) => {
 
           {/* Desktop auth buttons */}
           <div className="hidden md:flex md:items-center md:space-x-4">
-            <a href="/signin" className="px-3 py-1.5 rounded-full text-white/80 hover:bg-neutral-800 transition-colors text-sm">Sign in</a>
-            <a
-              href="/signup"
+            <Link to="/signin" className="px-3 py-1.5 rounded-full border text-white/80 hover:bg-neutral-800 transition-colors text-sm">Sign in</Link>
+            <Link
+              to="/signup"
               onClick={() => setIsOpen(false)}
-              className="block text-center px-4 py-1 rounded-md bg-gradient-to-r from-[#507ADB] to-[#9B49E9] text-white shadow-lg hover:scale-[1.03] transition transform duration-200"
+              className="block text-center px-3 py-1 rounded-xl bg-gradient-to-r from-[#507ADB] to-[#9B49E9] text-white shadow-lg hover:scale-[1.03] transition transform duration-200"
             > 
               Sign up
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Hamburger */}
@@ -153,21 +154,21 @@ const Navbar = ({ open, setOpen }) => {
 
     {/* SIGN IN / SIGN UP */}
     <div className="mt-6 border-t border-neutral-800 pt-4 flex flex-col gap-3">
-      <a
-        href="/signin"
+      <Link
+        to="/signin"
         onClick={() => setIsOpen(false)}
-        className="block text-center px-3 py-3 rounded-md text-base font-medium text-white/80 hover:bg-neutral-900 transition-colors"
+        className="block text-center px-3 py-3 rounded-md text-base border font-medium text-white/80 hover:bg-neutral-900 transition-colors"
       >
         Sign in
-      </a>
+      </Link>
 
-      <a
-        href="/signup"
+      <Link
+        to="/signup"
         onClick={() => setIsOpen(false)}
-        className="block text-center px-3 py-3 rounded-md font-bold bg-gradient-to-r from-[#43D9FA] to-[#FA1CD4] text-white shadow-lg hover:scale-[1.03] transition transform duration-200"
+        className="block text-center px-3 py-3 rounded-xl font-bold bg-gradient-to-r from-[#507ADB] to-[#9B49E9] text-white shadow-lg hover:scale-[1.03] transition transform duration-200"
       >
         Sign up
-      </a>
+      </Link>
     </div>
   </div>
 </aside>

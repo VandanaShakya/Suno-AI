@@ -62,24 +62,25 @@ const UserProfile = () => {
     };
 
     return (
-        <div className="min-h-screen py-40 sm:p-6 lg:p-8" style={{ backgroundColor: PAGE_BG }}>
-            {/* Centered Content Container (70% width as requested) */}
-            <div className="mx-auto w-[70%] max-w-4xl">
+        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{ backgroundColor: PAGE_BG }}>
+            {/* Centered Content Container: responsive but target 70% on large screens */}
+            <div className="mx-auto w-full sm:w-[92%] md:w-[85%] lg:w-[70%] max-w-5xl">
 
                 {/* --- Profile Header Block --- */}
                 <div
-                    className="p-6 sm:p-8 rounded-xl text-white mb-8"
+                    className="p-4 sm:p-6 rounded-xl text-white mb-6 transform transition duration-200 hover:scale-101 hover:shadow-2xl"
                     style={{
                         background: 'transparent',
                         border: '1px solid transparent',
                         borderImage: THEME_BORDER,
                     }}
                 >
-                    <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6">
                         {/* 1. DP (Profile Picture) */}
                         <div className="flex-shrink-0">
                             <img
-                                className="h-24 w-24 sm:h-32 sm:w-32 rounded-full object-cover"
+                                className="h-20 w-20 sm:h-28 sm:w-28 rounded-full object-cover border-2" 
+                                style={{ borderColor: THEME_ACCENT }}
                                 src={userData.profilePicUrl}
                                 alt={`${userData.username}'s profile`}
                             />
@@ -87,25 +88,24 @@ const UserProfile = () => {
 
                         {/* 2. Name & Main Info */}
                         <div className="text-center md:text-left flex-grow">
-                            <div className="flex items-center justify-center md:justify-start space-x-4">
+                            <div className="flex flex-col md:flex-row items-center md:items-start justify-between">
                                 <div>
-                                    <h1 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">
                                         {userData.username}
                                     </h1>
-                                    <p className="text-xl font-semibold mt-1 text-white/90">
+                                    <p className="text-lg font-semibold mt-1 text-white/90">
                                         {userData.name}
                                     </p>
-                                    <p className="text-sm mt-1 text-white/80">
+                                    <p className="text-sm mt-1 text-white/70">
                                         {userData.joinDate}
                                     </p>
-                                    {/* show email if present */}
                                     <p className="text-sm mt-1 text-white/70">
                                         {userData.email}
                                     </p>
                                 </div>
 
                                 {/* Credits pill (visible in header) */}
-                                <div className="ml-2">
+                                <div className="mt-4 md:mt-0 md:ml-4">
                                     <div
                                         className="px-3 py-1 rounded-full text-center"
                                         style={{
@@ -120,7 +120,7 @@ const UserProfile = () => {
                                 </div>
                             </div>
 
-                            <div className="mt-4 flex justify-center md:justify-start space-x-3">
+                            <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-3">
                                 <button
                                     onClick={openEdit}
                                     className="px-3 py-2 text-sm font-medium rounded-lg text-white transition duration-200"
@@ -129,7 +129,7 @@ const UserProfile = () => {
                                     Edit Profile
                                 </button>
                                 <button
-                                    className="px-3 py-2 text-sm font-medium rounded-lg border text-white/90 hover:border-transparent transition duration-200"
+                                    className="px-3 py-2 text-sm font-medium rounded-lg border text-white/90 transition duration-200"
                                     style={{
                                         background: 'transparent',
                                         border: '1px solid transparent',
@@ -147,21 +147,21 @@ const UserProfile = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Column 1: Bio / Detailed Info */}
                     <div
-                        className="lg:col-span-2 p-6 sm:p-8 rounded-xl"
+                        className="lg:col-span-2 p-4 sm:p-6 rounded-xl hover:scale-105 hover:shadow-2xl transition transform duration-200"
                         style={{
                             background: 'transparent',
                             border: '1px solid transparent',
                             borderImage: THEME_BORDER,
                         }}
                     >
-                        <h2 className="text-2xl font-bold mb-4 border-b pb-2 text-white" style={{ borderColor: 'transparent' }}>
+                        <h2 className="text-xl sm:text-2xl font-bold mb-3 text-white">
                             About {userData.username}
                         </h2>
                         <p className="text-white/90 leading-relaxed mb-4">
                             {userData.bio}
                         </p>
 
-                        <h3 className="text-xl font-semibold mt-6 mb-2 text-white/90">Contact & Preferences</h3>
+                        <h3 className="text-lg font-semibold mt-4 mb-2 text-white/90">Contact & Preferences</h3>
                         <ul className="text-sm text-white/80 space-y-1">
                             <li><span className="font-medium">Favorite Genre:</span> Electronic / Ambient</li>
                             <li><span className="font-medium">Generation Quality:</span> High Fidelity (WAV)</li>
@@ -171,14 +171,14 @@ const UserProfile = () => {
 
                     {/* Column 2: Website Credits / Stats (Music Generation Focus) */}
                     <div
-                        className="lg:col-span-1 p-6 sm:p-8 rounded-xl"
+                        className="lg:col-span-1 p-4 sm:p-6 rounded-xl hover:scale-105 hover:shadow-2xl transition transform duration-200"
                         style={{
                             background: 'transparent',
                             border: '1px solid transparent',
                             borderImage: THEME_BORDER,
                         }}
                     >
-                        <h2 className="text-2xl font-bold mb-4 pb-2 text-white">
+                        <h2 className="text-xl sm:text-2xl font-bold mb-4 text-white">
                             Generation Credits
                         </h2>
 
@@ -194,7 +194,7 @@ const UserProfile = () => {
                             >
                                 <div>
                                     <p className="text-sm font-medium text-white/80">Current Credits</p>
-                                    <p className="text-3xl font-extrabold text-white">{userData.credits}</p>
+                                    <p className="text-2xl sm:text-3xl font-extrabold text-white">{userData.credits}</p>
                                 </div>
                                 <button
                                     className="px-3 py-2 text-sm font-semibold rounded-full text-white transition duration-200"
@@ -218,7 +218,7 @@ const UserProfile = () => {
                                     Generate music in a single prompt—start creating now!
                                 </p>
                                 <button
-                                    className="w-full py-2 font-bold rounded-lg text-white transition duration-200"
+                                    className="w-full py-2 font-bold rounded-lg text-white transition duration-200 hover:scale-104"
                                     style={{ backgroundColor: THEME_ACCENT }}
                                     onMouseOver={e => e.currentTarget.style.backgroundColor = THEME_ACCENT_HOVER}
                                     onMouseOut={e => e.currentTarget.style.backgroundColor = THEME_ACCENT}
@@ -236,14 +236,14 @@ const UserProfile = () => {
                         <div className="absolute inset-0 bg-black/60" onClick={closeEdit} />
                         <form
                             onSubmit={handleSave}
-                            className="relative w-full max-w-lg rounded-xl p-6 shadow-2xl"
+                            className="relative w-full max-w-lg rounded-xl p-4 sm:p-6 shadow-2xl"
                             style={{
                                 background: 'transparent',
                                 border: '1px solid transparent',
                                 borderImage: THEME_BORDER,
                             }}
                         >
-                            <h3 className="text-xl font-semibold text-white mb-4">Edit Profile</h3>
+                            <h3 className="text-lg sm:text-xl font-semibold text-white mb-3">Edit Profile</h3>
 
                             <label className="block mb-3">
                                 <span className="text-sm text-white/80">Display Name</span>
@@ -306,15 +306,15 @@ const UserProfile = () => {
 // Helper component for repeated stats block
 const StatCard = ({ value, label }) => (
     <div
-        className="p-3 rounded-lg text-center"
+        className="p-3 rounded-lg text-center transition transform duration-200 hover:scale-105 hover:shadow-lg"
         style={{
             background: 'transparent',
             border: '1px solid transparent',
             borderImage: THEME_BORDER,
         }}
     >
-        <p className="text-2xl font-bold text-white">{value}</p>
-        <p className="text-xs text-white/60 uppercase">{label}</p>
+        <p className="text-2xl sm:text-3xl font-bold text-white">{value}</p>
+        <p className="text-xs sm:text-sm text-white/60 uppercase">{label}</p>
     </div>
 );
 

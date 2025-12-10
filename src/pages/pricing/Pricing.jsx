@@ -2,71 +2,90 @@ import React from 'react';
 import { pricingPlans } from '../../data/data';
 import CreditSection from './CreditsSection';
 import { motion } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 
 const Pricing = () => {
   return (
  <>
- <div className="relative min-h-screen w-full overflow-hidden bg-[#131B27] flex items-center justify-center">
-      <div 
-        className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 
-                   h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] rounded-full filter blur-3xl opacity-60 **mix-blend-screen** transition-all duration-1000 ease-in-out bubble-1" 
-        style={{ 
-          // High saturation gradient
-          background: 'radial-gradient(circle, rgba(255, 0, 150, 0.9) 0%, rgba(150, 0, 255, 0.7) 100%)',
-          willChange: 'transform'
-        }}
-      ></div>
+<div className="relative overflow-hidden bg-[#0f1720]">
+      {/* soft background blobs (subtle, decorative) */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div
+          className="absolute top-20 left-20 w-72 h-72 sm:w-96 sm:h-96 bg-purple-600 rounded-full"
+          style={{ filter: 'blur(64px)' }}
+        />
+        <div
+          className="absolute bottom-20 right-20 w-72 h-72 sm:w-96 sm:h-96 bg-cyan-500 rounded-full"
+          style={{ filter: 'blur(64px)' }}
+        />
+      </div>
 
-      {/* Bubble 2: Orange/Yellow */}
-      <div 
-         className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 
-                   h-[350px] w-[350px] sm:h-[450px] sm:w-[450px] rounded-full filter blur-3xl opacity-60 **mix-blend-screen** transition-all duration-1000 ease-in-out bubble-2" 
-        style={{ 
-           background: 'radial-gradient(circle, rgba(255, 165, 0, 0.9) 0%, rgba(255, 255, 0, 0.7) 100%)',
-          willChange: 'transform'
-        }}
-      ></div>
+      {/* main content */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center z-10">
+        {/* badge */}
+        <div
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4 mx-auto"
+          style={{ background: 'rgba(124, 58, 237, 0.08)', border: '1px solid rgba(124, 58, 237, 0.18)' }}
+        >
+          <Sparkles size={14} className="text-purple-400" />
+          <span className="text-xs sm:text-sm text-purple-300 font-medium">AI-Powered Music Generation</span>
+        </div>
 
+        {/* heading */}
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 leading-tight">
+          <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
+            Pricing
+          </span>
+        </h1>
 
- <div className="relative z-10 text-center mt-6 px-4 sm:px-0 ">
-  <p className="max-w-3xl mx-auto text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
-    Simple, flexible pricing — designed for creators and studios.
-    Choose a plan that fits your workflow and scale up as you grow.
-    High-quality exports, priority rendering, and commercial licenses included.
-  </p>
+        {/* pricing content (kept exactly as provided, reduced to a readable paragraph) */}
+        <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto mb-6 sm:mb-8 leading-relaxed">
+          Simple, flexible pricing — designed for creators and studios. Choose a plan that fits your workflow and scale up as you grow. High-quality exports, priority rendering, and commercial licenses included.
+        </p>
 
-  {/* Buttons */}
-  <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-    {/* Primary CTA */}
-   <a
-  href="#pricing"
-  className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-semibold text-white shadow-lg transform transition hover:scale-[1.03]"
-  style={{ backgroundImage: 'linear-gradient(90deg,#43D9FA,#FA1CD4)' }}
->
-  View pricing
-  <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
-  </svg>
-</a>
+        {/* CTAs (mobile-optimized smaller sizes) */}
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+          <a
+            href="#pricing"
+            className="
+              px-4 py-2            /* smaller mobile size */
+              sm:px-8 sm:py-4      /* larger on bigger screens */
+              rounded-lg sm:rounded-xl
+              font-bold text-white
+              transition-all hover:scale-105 hover:shadow-2xl
+              text-xs sm:text-base /* smaller text on mobile */
+            "
+            style={{ background: 'linear-gradient(90deg, #7c3aed, #06b6d4)' }}
+            aria-label="View pricing"
+          >
+            View pricing
+          </a>
 
+          <a
+            href="/contact"
+            className="
+              px-3 py-2
+              sm:px-6 sm:py-3
+              rounded-lg sm:rounded-xl
+              font-medium text-white/90
+              transition-all
+              text-xs sm:text-base
+              inline-flex items-center justify-center
+            "
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
+            aria-label="Contact sales"
+          >
+            Contact sales
+          </a>
+        </div>
 
-    {/* Secondary CTA */}
-    <a
-      href="/contact"
-      className="inline-flex items-center justify-center px-5 py-3 rounded-xl font-medium text-white/90 bg-black/40 border border-white/10 hover:bg-white/5 transition"
-      aria-label="Contact sales"
-    >
-      Contact sales
-    </a>
-  </div>
-
-  {/* Small pricing hint */}
-  <p className="mt-4 text-sm text-white/60 text-center max-w-xl mx-auto">
-    Plans from <span className="text-white font-semibold">$0</span> — try free or request a demo for enterprise needs.
-  </p>
-</div>
-
-      
+        <p className="mt-4 text-sm text-white/60 text-center max-w-xl mx-auto">
+          Plans from <span className="text-white font-semibold">$0</span> — try free or request a demo for enterprise needs.
+        </p>
+      </div>
     </div>
     {/* pricing information */}
 
