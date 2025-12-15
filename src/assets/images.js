@@ -17,7 +17,7 @@ import aboutBack from './home/aboutback.jpg'
 
 import pricingBackImage from './home/pricingbackimage.jpg'
 import pricingHeroImage from './home/pricinghero.jpg'
-import helpBackImage from './home/helpBack.jpg'
+import helpBackImage from './home/helpback.jpg'
 import contactBackImage from './home/contactback.png'
 import ctaBackImage from './home/ctabackimage.png'
 import signUp from './home/signup.jpg'
