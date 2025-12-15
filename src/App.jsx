@@ -16,6 +16,7 @@ import Faqs from "./pages/Faqs";
 import UserProfile from "./pages/userProfile/UserProfile";
 import SignIn from "./pages/signin/SignIn";
 import Signup from "./pages/signup/Signup";
+import Check from "./pages/Check";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -67,6 +68,7 @@ function App() {
                 <Route path="/user-profile" element={<UserProfile/>}/>
                 <Route path="/signin" element={<SignIn/>}/>
                 <Route path="/signup" element={<Signup/>}/>
+                <Route path="/check" element={<Check/>}/>
               </Routes>
             </main>
 

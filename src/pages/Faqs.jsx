@@ -1,15 +1,5 @@
 import React, { useState, useMemo } from "react";
-
-/**
- * FAQSection.jsx
- * - Tailwind-based responsive FAQ accordion
- * - Single-open accordion (click to open; opens only one at a time)
- * - Search/filter input
- * - Accessible (aria-expanded, keyboard-focusable)
- *
- * Drop into any page; no external dependencies required.
- */
-
+ 
 const defaultFaqs = [
   {
     q: "Can I use generated music commercially?",
@@ -61,7 +51,7 @@ export default function Faqs({ faqs = defaultFaqs }) {
   }, [faqs, query]);
 
   return (
-    <section className="bg-[#030712] py-10 sm:py-14">
+    <section className="bg-[#030712] py-24">
       <div className="mx-auto w-[92%] md:w-[85%] lg:w-[80%] max-w-6xl">
         <div className="mb-8 text-left">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight">

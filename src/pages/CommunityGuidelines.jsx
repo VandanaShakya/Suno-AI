@@ -3,7 +3,7 @@ import { guidelines } from '../data/data';
 
 export default function CommunityGuidelines() {
   return (
-    <div className="min-h-screen bg-black text-slate-100 p-4 md:p-10">
+    <div className="min-h-screen bg-black text-slate-100 px-3 py-4 md:p-10">
       <div className="max-w-6xl mx-auto bg-black/60 rounded-2xl p-4 md:p-8 shadow-lg">
 
         {/* HEADER */}
@@ -11,9 +11,9 @@ export default function CommunityGuidelines() {
           <div className="flex items-center gap-4">
             <div
               aria-hidden
-              className="w-12 h-12 md:w-14 md:h-14 rounded-lg flex items-center justify-center font-bold text-black"
+              className="w-11 h-11 md:w-14 md:h-14 rounded-lg flex items-center justify-center font-bold text-white"
               style={{
-                background: 'linear-gradient(90deg,#43D9FA,#FA1CD4)',
+                background: 'linear-gradient(90deg,#507ADB,#9B49E9)',
               }}
             >
               S
@@ -33,7 +33,7 @@ export default function CommunityGuidelines() {
         </header>
 
         {/* MAIN CONTENT */}
-        <main className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <main className="mt-5 md:mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
 
           {/* LEFT SECTION */}
           <section className="md:col-span-2">
@@ -41,13 +41,13 @@ export default function CommunityGuidelines() {
               {guidelines.map((g, idx) => (
                 <li
                   key={idx}
-                  className="flex gap-3 md:gap-4 items-start bg-black/20 p-3 md:p-4 rounded-lg border border-white/5"
+                  className="flex gap-3 md:gap-4 items-start bg-black/30 p-3 md:p-4 rounded-lg border border-white/5"
                 >
                   <span
                     className="flex-shrink-0 w-3 h-3 md:w-4 md:h-4 rounded-full mt-1"
                     style={{
-                      background: 'linear-gradient(90deg,#43D9FA,#FA1CD4)',
-                      boxShadow: '0 6px 20px rgba(250,28,212,0.08)',
+                      background: 'linear-gradient(90deg,#507ADB,#9B49E9)',
+                      boxShadow: '0 6px 20px rgba(155,73,233,0.15)',
                     }}
                     aria-hidden
                   />
@@ -65,7 +65,7 @@ export default function CommunityGuidelines() {
               ))}
             </ul>
 
-            <div className="mt-6 text-xs md:text-sm text-slate-400 text-left">
+            <div className="mt-5 md:mt-6 text-xs md:text-sm text-slate-400 text-left">
               <p>
                 <strong>Enforcement:</strong> Violations may result in content removal,
                 warnings, or account suspension depending on severity.
@@ -86,7 +86,7 @@ export default function CommunityGuidelines() {
               Quick summary
             </h4>
 
-            <p classname="text-slate-300 text-sm mt-2 text-left">
+            <p className="text-slate-300 text-sm mt-2 text-left">
               Short and practical rules to follow:
             </p>
 
@@ -94,7 +94,7 @@ export default function CommunityGuidelines() {
               <li className="flex items-center gap-2">
                 <span
                   className="w-2 h-2 rounded-full"
-                  style={{ background: 'linear-gradient(90deg,#43D9FA,#FA1CD4)' }}
+                  style={{ background: 'linear-gradient(90deg,#507ADB,#9B49E9)' }}
                 />
                 Be kind • Share only what you own • No harassment
               </li>
@@ -102,15 +102,15 @@ export default function CommunityGuidelines() {
               <li className="flex items-center gap-2">
                 <span
                   className="w-2 h-2 rounded-full"
-                  style={{ background: 'linear-gradient(90deg,#43D9FA,#FA1CD4)' }}
+                  style={{ background: 'linear-gradient(90deg,#507ADB,#9B49E9)' }}
                 />
                 Protect privacy • Report violations
               </li>
             </ul>
 
             <a
-              className="inline-block mt-5 px-3 py-2 rounded-lg font-semibold text-black text-sm md:text-base
-               bg-gradient-to-r from-[#43D9FA] to-[#FA1CD4]"
+              className="inline-block mt-5 px-4 py-2 rounded-lg font-semibold text-white text-sm md:text-base
+              bg-gradient-to-r from-[#507ADB] to-[#9B49E9]"
               href="#"
             >
               Read full policy

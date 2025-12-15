@@ -185,3 +185,18 @@ html {
   scroll-behavior: smooth;
 }
 
+.marquee {
+  display: flex;
+  animation: scrollLeft 20s linear infinite;
+}
+
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-70%);
+  }
+}
+
+

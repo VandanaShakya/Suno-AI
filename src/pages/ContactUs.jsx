@@ -1,118 +1,171 @@
 import React from 'react'
 import { ArrowRight } from 'lucide-react';
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaYoutube } from "react-icons/fa";
-import { Sparkles } from 'lucide-react';
-
+import images from '../assets/images';
 
 const ContactUs = () => {
   return (
     <>
-      {/* hero section */}
-      <div className="relative overflow-hidden bg-[#0f1720]">
-        {/* Soft background blobs (visible but subtle) */}
-        <div className="absolute inset-0 opacity-20 pointer-events-none">
-          <div
-            className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2
-                     h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] rounded-full"
+       {/* <div className="relative overflow-hidden bg-[#0f1720] min-h-[100vh] sm:min-h-[100vh] flex items-center">
+     <div className="absolute inset-0 opacity-30 pointer-events-none">
+
+         <div className="absolute inset-0 bg-gradient-to-br from-[#1a2233] via-[#141e2c] to-[#0d121a] opacity-60" />
+
+         <div
+            className="absolute top-10 left-10 w-72 h-72 sm:w-96 sm:h-96 bg-purple-600 rounded-full blur-3xl"
+            style={{ filter: 'blur(80px)' }}
+        />
+
+         <div
+            className="absolute bottom-10 right-10 w-72 h-72 sm:w-96 sm:h-96 bg-cyan-500 rounded-full blur-3xl"
+            style={{ filter: 'blur(80px)' }}
+        />
+
+         <div
+            className="absolute top-1/2 left-1/2 w-[500px] h-[500px] bg-blue-500 rounded-full blur-[150px]"
+            style={{ transform: 'translate(-50%, -50%)', opacity: 0.35 }}
+        />
+
+         <div
+            className="absolute top-1/3 right-1/4 w-72 h-72 bg-blue-400 rounded-full blur-[120px]"
+            style={{ opacity: 0.35 }}
+        />
+
+         <div
+            className="absolute bottom-0 left-1/2 w-[450px] h-[450px] bg-purple-700 rounded-full blur-[150px]"
+            style={{ transform: 'translateX(-50%)', opacity: 0.25 }}
+        />
+
+         <div className="absolute inset-0">
+            {[...Array(10)].map((_, i) => (
+                <div
+                    key={i}
+                    className="absolute w-10 h-10 bg-pink-400 rounded-full blur-2xl opacity-40 animate-pulse"
+                    style={{
+                        top: `${Math.random() * 100}%`,
+                        left: `${Math.random() * 100}%`,
+                        filter: "blur(30px)"
+                    }}
+                />
+            ))}
+        </div>
+    </div>
+
+     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-32 text-center z-10 w-full">
+
+        <div
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 mx-auto"
             style={{
-              background: 'radial-gradient(circle, rgba(255, 0, 150, 0.9) 0%, rgba(150, 0, 255, 0.7) 100%)',
-              filter: 'blur(64px)',
+                background: 'rgba(124, 58, 237, 0.10)',
+                border: '1px solid rgba(124, 58, 237, 0.25)',
             }}
-          />
-          <div
-            className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2
-                     h-[350px] w-[350px] sm:h-[450px] sm:w-[450px] rounded-full"
-            style={{
-              background: 'radial-gradient(circle, rgba(255, 165, 0, 0.9) 0%, rgba(255, 255, 0, 0.7) 100%)',
-              filter: 'blur(64px)',
-            }}
-          />
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400"><path d="M12 1v3"/><path d="m3.5 20.5 2.5-2.5"/><path d="M4 12H1"/><path d="m20.5 3.5-2.5 2.5"/><path d="M12 23v-3"/><path d="m20.5 20.5-2.5-2.5"/><path d="M23 12h-3"/><path d="m3.5 3.5 2.5 2.5"/></svg>
+            <span className="text-xs sm:text-sm text-purple-300 font-medium">
+                Contact Us
+            </span>
         </div>
 
-        {/* Optional full-bleed background image (uncomment if needed) */}
-        {/*
-      <img
-        src={images.feature5}
-        alt="bg"
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ filter: 'brightness(0.28)', zIndex: 0 }}
-      />
-      */}
-
-        {/* Main content container */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center z-10">
-          {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4 mx-auto"
-            style={{
-              background: 'rgba(124, 58, 237, 0.08)',
-              border: '1px solid rgba(124, 58, 237, 0.18)',
-            }}
-          >
-            <Sparkles size={14} className="text-purple-400" />
-            <span className="text-xs sm:text-sm text-purple-300 font-medium">
-              AI-Powered Music Support
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-5 leading-tight">
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
+                We're here to help — reach out to the Suno AI team
             </span>
-          </div>
+        </h1>
 
-          {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-4 sm:mb-6 leading-tight">
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Contact Us
-            </span>
-          </h1>
+        <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto mb-8 leading-relaxed">
+            Have questions, feedback, partnership ideas, billing issues, or technical concerns? Our team is ready to assist you. 
+            Send us a message and we'll get back to you as soon as possible — usually within 24 hours.
+        </p>
 
-          {/* Contact Page Content */}
-          <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto mb-6 sm:mb-8 leading-relaxed">
-            Have a question, need support, or want to collaborate?
-            Our team is here to help you with anything related to Suno AI —
-            from technical assistance and product guidance to business inquiries.
-          </p>
+        <div className="flex flex-wrap justify-center gap-4">
+            <a
+                href="#contact-form"
+                className="px-7 py-3 sm:px-10 sm:py-4 rounded-xl font-bold text-white transition-all text-sm sm:text-base shadow-lg"
+                style={{ background: 'linear-gradient(90deg, #7c3aed, #06b6d4)' }}
+            >
+                Send a Message
+            </a>
 
-          {/* CTAs */}
-          <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
-  <a
-    href="#contact"
-    className="
-      px-3 py-2          /* smaller mobile */
-      sm:px-6 sm:py-3     /* reduced desktop size */
-      rounded-lg sm:rounded-xl
-      font-semibold text-white
-      transition-all hover:scale-105 hover:shadow-2xl
-      text-xs sm:text-sm   /* smaller text everywhere */
-    "
-    style={{ background: 'linear-gradient(90deg, #7c3aed, #06b6d4)' }}
-    aria-label="Contact support"
-  >
-    Contact Support
-  </a>
+            <a
+                href="mailto:support@suno.ai"
+                className="px-7 py-3 sm:px-10 sm:py-4 rounded-xl font-bold text-white transition-all text-sm sm:text-base"
+                style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                }}
+            >
+                Email Support
+            </a>
+        </div>
 
-  <a
-    href="#faq"
-    className="
-      px-3 py-2            /* smaller mobile */
-      sm:px-6 sm:py-3       /* slightly reduced desktop */
-      rounded-lg sm:rounded-xl
-      font-semibold text-white
-      transition-all
-      text-xs sm:text-sm    /* smaller text */
-    "
-    style={{
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid rgba(255,255,255,0.06)',
-    }}
-    aria-label="View FAQ"
-  >
-    View FAQ
-  </a>
+        <p className="mt-5 text-sm text-white/50 text-center max-w-xl mx-auto">
+            For urgent issues, check our Help Center or reach out directly via email. We're committed to giving every creator the support they deserve.
+        </p>
+
+    </div>
+</div> */}
+
+
+
+
+{/* hero section  */}
+ <div className="relative overflow-hidden min-h-[100vh] flex items-center">
+
+  {/* 🔹 BACKGROUND IMAGE */}
+  <div className="absolute inset-0 z-0 pointer-events-none">
+    <img
+      src={images.contactBackImage}
+      alt="Background"
+      className="w-full h-full object-cover"
+      draggable={false}
+    />
+  </div>
+
+  {/* 🔹 OVERLAY (opacity controlled here) */}
+  <div className="absolute inset-0 z-[1] bg-black/40 pointer-events-none" />
+  {/* change bg-black/50 → bg-black/30 or bg-black/60 as needed */}
+
+  {/* 🔹 CONTENT */}
+  <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-32 text-center w-full text-white">
+
+    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 mx-auto border border-white/20 bg-black/30 backdrop-blur">
+      <span className="text-xs sm:text-sm font-medium">
+         Contact Us
+      </span>
+    </div>
+    
+
+    <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-5 leading-tight ">
+                We're here to help — reach out to the Suno AI team
+    </h1>
+
+    <p className="text-base sm:text-lg text-gray-200 max-w-3xl mx-auto mb-8 leading-relaxed">
+ Have questions, feedback, partnership ideas, billing issues, or technical concerns? Our team is ready to assist you. 
+            Send us a message and we'll get back to you as soon as possible — usually within 24 hours.    </p>
+
+    <div className="flex flex-wrap justify-center gap-4">
+      <a
+        href="#features"
+        className="px-7 py-3 sm:px-10 sm:py-4 rounded-xl font-bold bg-purple-600"
+      >
+        Visit Help Center
+      </a>
+
+      <a
+        href="#quick-start"
+        className="px-7 py-3 sm:px-10 sm:py-4 rounded-xl font-bold border border-white/30 bg-black/30 backdrop-blur"
+      >
+        Get Started
+      </a>
+    </div>
+<p className="mt-5 text-sm text-white text-center max-w-xl mx-auto">
+            24/7 support, community forums, and tutorials — trusted by creators globally to resolve issues quickly and keep you making music.
+        </p>
+
+  </div>
 </div>
 
 
-          <p className="mt-4 text-sm text-white/60 text-center max-w-xl mx-auto">
-            Plans from <span className="text-white font-semibold">$0</span> — try free or request a demo for enterprise needs.
-          </p>
-        </div>
-      </div>
 
       {/* second section */}
       <div className="w-full bg-[#131B27] py-12 md:py-20 px-4 md:px-8">

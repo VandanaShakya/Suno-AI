@@ -62,43 +62,52 @@ export const cardsData = [
 
 // pricing data //
 export const pricingData = [
-    {
-      plan: "Basic",
-      description: "Great for private individuals",
-      features: ["1 User", "Unlimited Projects", "Download prototypes", "1 Gb workspace"],
-      price: "Free",
-      highlighted: true,
-      priceDetail: "",
-      isOptimal: false
-    },
-    {
-      plan: "Starter",
-      description: "Great for private individuals",
-      features: ["1 User", "Unlimited Projects", "Download prototypes", "1 Gb workspace"],
-      price: "$59",
-      highlighted: false,
-      priceDetail: "/mo",
-      isOptimal: false
-    },
-    {
-      plan: "Optimal",
-      description: "14 days free period",
-      features: ["3 Users", "Unlimited Projects", "Download prototypes", "100 Gb workspace"],
-      price: "$99",
-      highlighted: false,
-      priceDetail: "/mo",
-      isOptimal: true
-    },
-    {
-      plan: "Unlimited",
-      description: "Great for private individuals",
-      features: ["100 Users", "Unlimited Projects", "Download prototypes", "100 Gb workspace"],
-      price: "$199",
-      highlighted: false,
-      priceDetail: "/mo",
-      isOptimal: false
-    },
-  ];
+  {
+    plan: "Basic",
+    description: "Great for private individuals",
+    features: [
+      "1 User - Ideal for personal use",
+      "Unlimited Projects - Manage all your personal projects",
+      "Download prototypes - Save your designs locally",
+      "1 Gb workspace - Store your small files securely"
+    ],
+    price: "Free",
+    highlighted: true,
+    priceDetail: "",
+    isOptimal: false,
+    bgImage: images.pricingBackImage
+  },
+  {
+    plan: "Starter",
+    description: "Perfect for small teams and freelancers",
+    features: [
+      "3 Users - Collaborate with your small team",
+      "Unlimited Projects - Handle multiple projects simultaneously",
+      "Download prototypes - Share and download easily",
+      "10 Gb workspace - Enough space for team files"
+    ],
+    price: "$59",
+    highlighted: false,
+    priceDetail: "/mo",
+    isOptimal: false,
+    bgImage: images.pricingBackImage
+  },
+  {
+    plan: "Optimal",
+    description: "Ideal for growing teams with advanced needs",
+    features: [
+      "10 Users - Large team collaboration",
+      "Unlimited Projects - Keep all team projects organized",
+      "Download prototypes - Easy access to all designs",
+      "100 Gb workspace - Large storage for all files"
+    ],
+    price: "$99",
+    highlighted: false,
+    priceDetail: "/mo",
+    isOptimal: true,
+    bgImage: images.pricingBackImage
+  }
+];
 
   // pricing page plans //
   export const pricingPlans = [
@@ -384,33 +393,37 @@ export const stats = [
 ];
 
 
-
 export const aiVoices = [
   {
     id: 1,
     name: "Alex (The Narrator)",
     style: "Deep, clear, and professional",
     icon: FiMic,
+    image: images.sample1
   },
   {
     id: 2,
     name: "Sophia (The Storyteller)",
     style: "Warm, expressive, and engaging",
     icon: FiUser,
+    image: images.sample2
   },
   {
     id: 3,
     name: "Max (The Robot)",
     style: "Synthetic, fast-paced, and energetic",
     icon: FiHeadphones,
+    image: images.sample3
   },
   {
     id: 4,
     name: "Lena (The Assistant)",
     style: "Smooth, friendly, and conversational",
     icon: FiUser,
+    image: images.sample4
   },
 ];
+
 
 export const reelsData = [
     {

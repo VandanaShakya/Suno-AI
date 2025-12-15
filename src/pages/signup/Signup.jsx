@@ -59,7 +59,7 @@ export default function Signup({ onSubmit }) {
     >
       {/* Full background image */}
       <img
-        src={images.feature5}
+        src={images.signUp}
         alt="background"
         className="absolute inset-0 w-full h-full object-cover"
         style={{ filter: 'brightness(0.35)', zIndex: 0 }}
