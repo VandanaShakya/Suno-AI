@@ -21,6 +21,7 @@ import helpBackImage from './home/helpback.jpg'
 import contactBackImage from './home/contactback.png'
 import ctaBackImage from './home/ctabackimage.png'
 import signUp from './home/signup.jpg'
+import createBackImage from './home/createbackimage.png'
 
 
 const images = {
@@ -46,7 +47,7 @@ const images = {
 pricingHeroImage,
 helpBackImage,
 contactBackImage,
-ctaBackImage
-
+ctaBackImage,
+createBackImage  
 }
 export default images

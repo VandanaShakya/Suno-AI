@@ -6,6 +6,7 @@ import { logout } from '../store/slices/authSlice';
 const NAV_ITEMS = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
+  { name: 'create', href: '/create' },
   { name: 'Pricing', href: '/pricing' },
   { name: 'Help', href: '/help' },
   { name: 'Contact Us', href: '/contact-us' },

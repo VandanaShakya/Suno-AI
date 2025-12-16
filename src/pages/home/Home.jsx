@@ -248,30 +248,14 @@ const cardVariants = {
           </p>
         </motion.div>
 
-        {/* INPUT */}
-        <div className="w-full md:max-w-xl">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Describe the track you want..."
-              className="w-full pr-32 px-4 py-3 md:py-4 rounded-xl bg-[#1F2531] border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#A146EA]"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-            />
-
-            <button
+          {/* <button
               onClick={handleGenerate}
               disabled={loading || !prompt}
-              className="absolute right-1 top-1/2 -translate-y-1/2 px-4 py-2 md:py-3 rounded-lg font-semibold text-white shadow-lg transition-transform hover:scale-[1.03]"
-              style={{
-                background:
-                  "linear-gradient(90deg, #A146EA, #4B7DDA)",
-              }}
+              className="z-20 absolute right-1 top-1/2 -translate-y-1/2 px-4 py-2 md:py-3 rounded-lg font-semibold text-white shadow-lg transition-transform hover:scale-[1.03]"
+               
             >
-              {loading ? "Generating..." : "Generate Now"}
-            </button>
-          </div>
-        </div>
+              
+            </button> */}
       </div>
 
       {/* RIGHT COLUMN — IMAGE BLOCK (NEW, ADDED) */}
