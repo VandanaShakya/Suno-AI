@@ -1,5 +1,7 @@
-import React, { useState   } from 'react';
+import React, { useState } from 'react';
 import { EyeOff, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useLoginMutation } from '../../services/api/authApi';
 import images from '../../assets/images';
 
 // Theme constants
@@ -7,17 +9,16 @@ import images from '../../assets/images';
 const THEME_ACCENT_HOVER = '#9B49E9';
 const PAGE_BG = '#131B27';
 
-export default function SignIn({ onSubmit }) {
+export default function SignIn() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();
+  const [login, { isLoading: loading }] = useLoginMutation();
 
- 
   const validate = () => {
     const e = {};
-    if (!form.email) e.email = 'Email required';
+    if (!form.email.trim()) e.email = 'Email required';
     if (!form.password) e.password = 'Password required';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -26,24 +27,34 @@ export default function SignIn({ onSubmit }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(f => ({ ...f, [name]: value }));
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccess(null);
+    setErrors({});
     if (!validate()) return;
 
-    setLoading(true);
     try {
-      await new Promise(res => setTimeout(res, 800));
-      setSuccess('Signed in successfully');
-      setForm({ email: '', password: '' });
-      setErrors({});
-      if (onSubmit) onSubmit({ email: form.email, password: form.password });
-    } catch {
-      setErrors({ submit: 'Something went wrong. Try again.' });
-    } finally {
-      setLoading(false);
+      await login({
+        email: form.email.trim(),
+        password: form.password,
+      }).unwrap();
+
+      // Redirect to home page (credentials are set by the login mutation)
+      navigate('/');
+    } catch (err) {
+      if (err.data?.error) {
+        const errorMessage = err.data.error.message || 'Invalid email or password.';
+        setErrors({ submit: errorMessage });
+      } else if (err.status === 'FETCH_ERROR') {
+        setErrors({ submit: 'Network error. Please check your connection.' });
+      } else {
+        setErrors({ submit: 'Invalid email or password.' });
+      }
     }
   };
 
@@ -140,28 +151,18 @@ export default function SignIn({ onSubmit }) {
               <p className="text-sm text-rose-400 mb-2">{errors.submit}</p>
             )}
 
-            {success && (
-              <p className="text-sm text-emerald-400 mb-2">{success}</p>
-            )}
-
             {/* BUTTON */}
             <button
               type="submit"
               disabled={loading}
               className="w-full mt-4 py-2 rounded-lg font-semibold text-white transition transform bg-gradient-to-r from-[#507ADB] to-[#9B49E9] hover:cursor-pointer"
-              onMouseOver={e =>
-                (e.currentTarget.style.backgroundColor = THEME_ACCENT_HOVER)
-              }
-              onMouseOut={e =>
-                (e.currentTarget.style.backgroundColor = THEME_ACCENT)
-              }
             >
               {loading ? 'Signing in…' : 'Sign in'}
             </button>
 
             <div className="text-center text-white/70 text-sm mt-4">
               Don't have an account?{' '}
-              <button className="underline text-white/90">Sign up</button>
+              <a href="/signup" className="underline text-white/90">Sign up</a>
             </div>
           </form>
         </div>

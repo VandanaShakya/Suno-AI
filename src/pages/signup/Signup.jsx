@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { EyeOff, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useRegisterMutation, useLoginMutation } from '../../services/api/authApi';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../store/slices/authSlice';
 import images from '../../assets/images';
 
 // Theme constants
@@ -7,21 +11,27 @@ const THEME_ACCENT = '#507ADB';
 const THEME_ACCENT_HOVER = '#9B49E9';
 const PAGE_BG = '#131B27';
 
-export default function Signup({ onSubmit }) {
+export default function Signup() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [register, { isLoading: isRegistering }] = useRegisterMutation();
+  const [login, { isLoading: isLoggingIn }] = useLoginMutation();
+  const loading = isRegistering || isLoggingIn;
   
     
 
 
   const validate = () => {
     const e = {};
-    if (!form.name) e.name = 'Name required';
-    if (!form.email) e.email = 'Email required';
+    if (!form.name.trim()) e.name = 'Name required';
+    if (!form.email.trim()) e.email = 'Email required';
     if (!form.password) e.password = 'Password required';
+    if (form.password && form.password.length < 8) {
+      e.password = 'Password must be at least 8 characters';
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -29,26 +39,54 @@ export default function Signup({ onSubmit }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(f => ({ ...f, [name]: value }));
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccess(null);
+    setErrors({});
     if (!validate()) return;
 
-    setLoading(true);
     try {
-      // Replace with real API call
-      await new Promise(res => setTimeout(res, 800));
-      setSuccess('Account created successfully');
-      const payload = { name: form.name, email: form.email, password: form.password };
-      setForm({ name: '', email: '', password: '' });
-      setErrors({});
-      if (onSubmit) onSubmit(payload);
+      // Register the user
+      await register({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: form.password,
+      }).unwrap();
+
+      // Automatically log in after successful registration
+      const loginResult = await login({
+        email: form.email.trim(),
+        password: form.password,
+      }).unwrap();
+
+      // Set credentials in Redux store (login mutation already does this, but ensure it's set)
+      dispatch(
+        setCredentials({
+          user: {
+            name: form.name.trim(),
+            email: form.email.trim(),
+          },
+          accessToken: loginResult.accessToken,
+          refreshToken: loginResult.refreshToken,
+        })
+      );
+
+      // Redirect to home page
+      navigate('/');
     } catch (err) {
-      setErrors({ submit: 'Something went wrong. Try again.' });
-    } finally {
-      setLoading(false);
+      if (err.data?.error) {
+        const errorMessage = err.data.error.message || 'Something went wrong. Try again.';
+        setErrors({ submit: errorMessage });
+      } else if (err.status === 'FETCH_ERROR') {
+        setErrors({ submit: 'Network error. Please check your connection.' });
+      } else {
+        setErrors({ submit: 'Something went wrong. Try again.' });
+      }
     }
   };
 
@@ -141,7 +179,6 @@ export default function Signup({ onSubmit }) {
             </label>
 
             {errors.submit && <p className="text-sm text-rose-400 mb-2">{errors.submit}</p>}
-            {success && <p className="text-sm text-emerald-400 mb-2">{success}</p>}
 
             <button
               type="submit"
@@ -153,7 +190,7 @@ export default function Signup({ onSubmit }) {
             </button>
 
             <div className="text-center text-white/70 text-sm mt-4">
-              Already have an account? <button type="button" className="underline text-white/90">Sign in</button>
+              Already have an account? <a href="/signin" className="underline text-white/90">Sign in</a>
             </div>
           </form>
         </div>

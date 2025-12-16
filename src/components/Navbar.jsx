@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../store/slices/authSlice';
 
 const NAV_ITEMS = [
   { name: 'Home', href: '/' },
@@ -20,9 +22,13 @@ const NavLink = ({ href, children }) => (
 
 const Navbar = ({ open, setOpen }) => {
   const [internalOpen, setInternalOpen] = useState(false);
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
   const isControlled = typeof open === 'boolean' && typeof setOpen === 'function';
   const isOpen = isControlled ? open : internalOpen;
   const setIsOpen = isControlled ? setOpen : setInternalOpen;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   // prevent body scroll when mobile drawer is open
   useEffect(() => {
@@ -35,6 +41,21 @@ const Navbar = ({ open, setOpen }) => {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    setAvatarMenuOpen(false);
+    navigate('/');
+  };
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name[0].toUpperCase();
+  };
 
   return (
     <header className="fixed top-0 left-0 w-full z-[70] bg-black font-['Inter',_sans-serif]">
@@ -57,16 +78,63 @@ const Navbar = ({ open, setOpen }) => {
             ))}
           </div>
 
-          {/* Desktop auth buttons */}
+          {/* Desktop auth buttons or avatar */}
           <div className="hidden md:flex md:items-center md:space-x-4">
-            <Link to="/signin" className="px-3 py-1.5 rounded-full border text-white/80 hover:bg-neutral-800 transition-colors text-sm">Sign in</Link>
-            <Link
-              to="/signup"
-              onClick={() => setIsOpen(false)}
-              className="block text-center px-3 py-1 rounded-xl bg-gradient-to-r from-[#507ADB] to-[#9B49E9] text-white shadow-lg hover:scale-[1.03] transition transform duration-200"
-            > 
-              Sign up
-            </Link>
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setAvatarMenuOpen(!avatarMenuOpen)}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-[#507ADB] to-[#9B49E9] text-white font-semibold hover:scale-105 transition transform cursor-pointer"
+                  aria-label="User menu"
+                >
+                  {user?.name ? getInitials(user.name) : 'U'}
+                </button>
+                {avatarMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setAvatarMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-48 bg-black border border-neutral-800 rounded-lg shadow-lg z-50">
+                      <div className="py-2">
+                        {user?.name && (
+                          <div className="px-4 py-2 text-sm text-white/90 border-b border-neutral-800">
+                            <p className="font-medium">{user.name}</p>
+                            {user?.email && (
+                              <p className="text-xs text-white/60 mt-1">{user.email}</p>
+                            )}
+                          </div>
+                        )}
+                        <Link
+                          to="/user-profile"
+                          onClick={() => setAvatarMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-white/80 hover:bg-neutral-900 transition-colors"
+                        >
+                          Profile
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-neutral-900 transition-colors"
+                        >
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link to="/signin" className="px-3 py-1.5 rounded-full border text-white/80 hover:bg-neutral-800 transition-colors text-sm">Sign in</Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setIsOpen(false)}
+                  className="block text-center px-3 py-1 rounded-xl bg-gradient-to-r from-[#507ADB] to-[#9B49E9] text-white shadow-lg hover:scale-[1.03] transition transform duration-200"
+                > 
+                  Sign up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Hamburger */}
@@ -152,23 +220,54 @@ const Navbar = ({ open, setOpen }) => {
       ))}
     </nav>
 
-    {/* SIGN IN / SIGN UP */}
+    {/* SIGN IN / SIGN UP or USER MENU */}
     <div className="mt-6 border-t border-neutral-800 pt-4 flex flex-col gap-3">
-      <Link
-        to="/signin"
-        onClick={() => setIsOpen(false)}
-        className="block text-center px-3 py-3 rounded-md text-base border font-medium text-white/80 hover:bg-neutral-900 transition-colors"
-      >
-        Sign in
-      </Link>
+      {isAuthenticated ? (
+        <>
+          {user?.name && (
+            <div className="px-3 py-2 text-sm text-white/90 border-b border-neutral-800 mb-2">
+              <p className="font-medium">{user.name}</p>
+              {user?.email && (
+                <p className="text-xs text-white/60 mt-1">{user.email}</p>
+              )}
+            </div>
+          )}
+          <Link
+            to="/user-profile"
+            onClick={() => setIsOpen(false)}
+            className="block text-center px-3 py-3 rounded-md text-base border font-medium text-white/80 hover:bg-neutral-900 transition-colors"
+          >
+            Profile
+          </Link>
+          <button
+            onClick={() => {
+              handleLogout();
+              setIsOpen(false);
+            }}
+            className="block text-center px-3 py-3 rounded-xl font-bold bg-gradient-to-r from-[#507ADB] to-[#9B49E9] text-white shadow-lg hover:scale-[1.03] transition transform duration-200"
+          >
+            Logout
+          </button>
+        </>
+      ) : (
+        <>
+          <Link
+            to="/signin"
+            onClick={() => setIsOpen(false)}
+            className="block text-center px-3 py-3 rounded-md text-base border font-medium text-white/80 hover:bg-neutral-900 transition-colors"
+          >
+            Sign in
+          </Link>
 
-      <Link
-        to="/signup"
-        onClick={() => setIsOpen(false)}
-        className="block text-center px-3 py-3 rounded-xl font-bold bg-gradient-to-r from-[#507ADB] to-[#9B49E9] text-white shadow-lg hover:scale-[1.03] transition transform duration-200"
-      >
-        Sign up
-      </Link>
+          <Link
+            to="/signup"
+            onClick={() => setIsOpen(false)}
+            className="block text-center px-3 py-3 rounded-xl font-bold bg-gradient-to-r from-[#507ADB] to-[#9B49E9] text-white shadow-lg hover:scale-[1.03] transition transform duration-200"
+          >
+            Sign up
+          </Link>
+        </>
+      )}
     </div>
   </div>
 </aside>
