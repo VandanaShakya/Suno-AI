@@ -1,3 +1,4 @@
+import { Wand2 } from "lucide-react";    
 import {
   FiCpu,
   FiZap,
@@ -5,11 +6,9 @@ import {
   FiGlobe,
   FiShield,
   FiMusic,
-  FiMic,
-  FiUser
-} from "react-icons/fi";
+  } from "react-icons/fi";
 import images from "../assets/images";
-
+import { FaMusic, FaSlidersH } from "react-icons/fa";  
 
 export const cardsData = [
   {
@@ -394,71 +393,79 @@ export const stats = [
 
 
 export const aiVoices = [
+  { id: 1, name: "Nova", style: "Warm & Calm" },
+  { id: 2, name: "Echo", style: "Deep & Professional" },
+  { id: 3, name: "Luna", style: "Soft & Friendly" },
+  { id: 4, name: "Atlas", style: "Strong & Confident" },
+  { id: 5, name: "Iris", style: "Bright & Cheerful" },
+  { id: 6, name: "Zen", style: "Smooth & Relaxed" },
+];
+
+
+export const stepsData = [
   {
     id: 1,
-    name: "Alex (The Narrator)",
-    style: "Deep, clear, and professional",
-    icon: FiMic,
-    image: images.sample1
+    title: "Generate Prompt",
+    description: "Generate the track, vocalise and get instant result in a click.",
   },
   {
     id: 2,
-    name: "Sophia (The Storyteller)",
-    style: "Warm, expressive, and engaging",
-    icon: FiUser,
-    image: images.sample2
+    title: "Audio in Insees",
+    description: "Use our powerful software to edit and version performing tracks.",
   },
   {
     id: 3,
-    name: "Max (The Robot)",
-    style: "Synthetic, fast-paced, and energetic",
-    icon: FiHeadphones,
-    image: images.sample3
+    title: "Generate Track",
+    description: "Select the instrument and create musical language through this camera shock.",
+  },
+];
+
+ 
+
+export const faqData = [
+  {
+    question: "What is the AI Music Generator?",
+    answer:
+      "Our AI Music Generator is a tool that allows you to create high-quality, professional music tracks by simply typing a text prompt. It uses advanced neural networks to understand style, mood, and instrumentation.",
   },
   {
-    id: 4,
-    name: "Lena (The Assistant)",
-    style: "Smooth, friendly, and conversational",
-    icon: FiUser,
-    image: images.sample4
+    question: "How does AuraBeat generate tracks?",
+    answer:
+      "AuraBeat analyzes your text prompt for keywords like 'chill synthwave' or 'epic orchestral.' It then synthesizes original audio samples, melodies, and rhythms to match your specific description in seconds.",
+  },
+  {
+    question: "Can I use the music for commercial projects?",
+    answer:
+      "Yes! Depending on your plan, the tracks generated can be used in YouTube videos, podcasts, and other commercial media projects without worrying about traditional copyright strikes.",
+  },
+  {
+    question: "Ready to create your perfect soundtrack?",
+    answer:
+      "Getting started is easy. Simply enter a prompt in the hero section above, click generate, and watch your musical ideas come to life instantly.",
   },
 ];
 
 
-export const reelsData = [
-    {
-      id: 1,
-      username: '@devianibza',
-      label: 'producers',
-      imageAlt: 'A man speaking into a microphone with studio equipment in the background.',
-      imageUrl: images.feature1
-    },
-    {
-      id: 2,
-      username: '@techguyver',
-      label: "it's the best numero UNO",
-      imageAlt: 'Close-up of a hand pointing at a laptop screen showing music production software.',
-      imageUrl: images.feature2
-    },
-    {
-      id: 3,
-      username: '@timbaland',
-      label: 'grid-cols 2 opacity X X B',
-      imageAlt: 'A man in a black shirt working on a computer screen.',
-      imageUrl: images.feature3
-    },
-    {
-      id: 4,
-      username: '@spellspand',
-      label: 'new sample wades X X B B',
-      imageAlt: 'A man wearing a green hat working with music hardware controllers.',
-      imageUrl: images.feature4
-    },
-    {
-      id: 5,
-      username: '@nickfoats',
-      label: 'the most insane',
-      imageAlt: 'A man looking up with text overlay on his face.',
-      imageUrl: images.feature5
-    },
-  ];
+export const featuresData = [
+  {
+    id: "prompt-ai",
+    icon: Wand2,
+    title: "Text-to-Music AI",
+    description:
+      "Describe your idea in words and let our AI instantly transform it into expressive, professional-quality music.",
+  },
+  {
+    id: "instant-generation",
+    icon: FaMusic,
+    title: "Instant Track Generation",
+    description:
+      "Advanced neural networks generate high-fidelity tracks in seconds, adapting seamlessly to genre, mood, and style.",
+  },
+  {
+    id: "creative-control",
+    icon: FaSlidersH,
+    title: "Full Creative Control",
+    description:
+      "Fine-tune vocals, instruments, and structure effortlessly to shape the final track exactly how you envision it.",
+  },
+];

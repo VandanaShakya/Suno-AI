@@ -42,7 +42,7 @@ function App() {
       `}</style>
 
       {/* Wrap everything */}
-      <div className="relative min-h-screen">
+      <div className=" ">
 
         {/* ---- FULL SCREEN OVERLAY LOADER ---- */}
         {loading && (
