@@ -16,7 +16,7 @@ import Faqs from "./pages/Faqs";
 import UserProfile from "./pages/userProfile/UserProfile";
 import SignIn from "./pages/signin/SignIn";
 import Signup from "./pages/signup/Signup";
-import Check from "./pages/Check";
+// import Check from "./pages/Check";
 import Create from "./pages/Create";
 
 function App() {
@@ -70,7 +70,7 @@ function App() {
                 <Route path="/user-profile" element={<UserProfile/>}/>
                 <Route path="/signin" element={<SignIn/>}/>
                 <Route path="/signup" element={<Signup/>}/>
-                <Route path="/check" element={<Check/>}/>
+                {/* <Route path="/check" element={<Check/>}/> */}
               </Routes>
             </main>
 
