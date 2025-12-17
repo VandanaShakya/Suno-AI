@@ -18,6 +18,7 @@ import SignIn from "./pages/signin/SignIn";
 import Signup from "./pages/signup/Signup";
 // import Check from "./pages/Check";
 import Create from "./pages/Create";
+import MyAlbum from "./pages/myAlbum/MyAlbum";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -68,6 +69,7 @@ function App() {
                 <Route path="/help" element={<Help/>}/>
                 <Route path="/faqs" element={<Faqs/>}/>
                 <Route path="/user-profile" element={<UserProfile/>}/>
+                <Route path="/my-album" element={<MyAlbum/>}/>
                 <Route path="/signin" element={<SignIn/>}/>
                 <Route path="/signup" element={<Signup/>}/>
                 {/* <Route path="/check" element={<Check/>}/> */}

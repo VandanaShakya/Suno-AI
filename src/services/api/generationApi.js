@@ -1,0 +1,49 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { API_BASE_URL } from "../../config/api";
+
+/**
+ * Generation API Slice
+ * RTK Query endpoints for music generation
+ */
+export const generationApi = createApi({
+  reducerPath: "generationApi",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${API_BASE_URL}/v1`,
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().auth?.token;
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
+  tagTypes: ["GenerationTask", "AudioResult"],
+  endpoints: (builder) => ({
+    generateMusic: builder.mutation({
+      query: (payload) => ({
+        url: "/generate",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["GenerationTask"],
+    }),
+    getTask: builder.query({
+      query: (taskId) => `/tasks/${taskId}`,
+      providesTags: (result, error, taskId) => [{ type: "GenerationTask", id: taskId }],
+    }),
+    getUserAudio: builder.query({
+      query: ({ limit = 20, cursor } = {}) => {
+        const params = new URLSearchParams();
+        params.append("limit", limit.toString());
+        if (cursor) {
+          params.append("cursor", cursor);
+        }
+        return `/audio?${params.toString()}`;
+      },
+      providesTags: ["AudioResult"],
+    }),
+  }),
+});
+
+export const { useGenerateMusicMutation, useGetTaskQuery, useLazyGetTaskQuery, useGetUserAudioQuery } = generationApi;
+

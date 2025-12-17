@@ -6,7 +6,7 @@ import { logout } from '../store/slices/authSlice';
 const NAV_ITEMS = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
-  { name: 'create', href: '/create' },
+  { name: 'Create', href: '/create' },
   { name: 'Pricing', href: '/pricing' },
   { name: 'Help', href: '/help' },
   { name: 'Contact Us', href: '/contact-us' },
@@ -94,6 +94,13 @@ const Navbar = () => {
                         onClick={() => setAvatarMenuOpen(false)}
                       >
                         Profile
+                      </Link>
+                      <Link
+                        to="/my-album"
+                        className="block px-4 py-2 text-white/80 hover:bg-neutral-900"
+                        onClick={() => setAvatarMenuOpen(false)}
+                      >
+                        My Album
                       </Link>
                       <button
                         onClick={handleLogout}
