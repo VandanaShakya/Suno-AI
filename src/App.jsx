@@ -19,6 +19,9 @@ import Signup from "./pages/signup/Signup";
 // import Check from "./pages/Check";
 import Create from "./pages/Create";
 import MyAlbum from "./pages/myAlbum/MyAlbum";
+import PaymentSuccess from "./pages/payment/PaymentSuccess";
+import PaymentCancel from "./pages/payment/PaymentCancel";
+import Invoices from "./pages/invoices/Invoices";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -72,6 +75,9 @@ function App() {
                 <Route path="/my-album" element={<MyAlbum/>}/>
                 <Route path="/signin" element={<SignIn/>}/>
                 <Route path="/signup" element={<Signup/>}/>
+                <Route path="/payment/success" element={<PaymentSuccess/>}/>
+                <Route path="/payment/cancel" element={<PaymentCancel/>}/>
+                <Route path="/invoices" element={<Invoices/>}/>
                 {/* <Route path="/check" element={<Check/>}/> */}
               </Routes>
             </main>

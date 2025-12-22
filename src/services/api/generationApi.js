@@ -17,7 +17,7 @@ export const generationApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["GenerationTask", "AudioResult"],
+  tagTypes: ["GenerationTask", "AudioResult", "UserCredits"],
   endpoints: (builder) => ({
     generateMusic: builder.mutation({
       query: (payload) => ({
@@ -42,8 +42,18 @@ export const generationApi = createApi({
       },
       providesTags: ["AudioResult"],
     }),
+    getUserCredits: builder.query({
+      query: () => "/user/credits",
+      providesTags: ["UserCredits"],
+    }),
   }),
 });
 
-export const { useGenerateMusicMutation, useGetTaskQuery, useLazyGetTaskQuery, useGetUserAudioQuery } = generationApi;
+export const {
+  useGenerateMusicMutation,
+  useGetTaskQuery,
+  useLazyGetTaskQuery,
+  useGetUserAudioQuery,
+  useGetUserCreditsQuery,
+} = generationApi;
 

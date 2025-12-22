@@ -1,11 +1,20 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { pricingPlans } from '../../data/data';
 // import CreditSection from './CreditsSection';
 import { motion } from 'framer-motion';
 import images from '../../assets/images';
+import { usePayment } from '../../hooks/usePayment';
+import { useGetUserProfileQuery } from '../../services/api/userApi';
 
 
 const Pricing = () => {
+  const { handlePayment, isLoading, error } = usePayment();
+  const isAuthenticated = useSelector((state) => state.auth?.isAuthenticated);
+  const { data: userProfile } = useGetUserProfileQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
   return (
  <>
 {/* <div className="relative overflow-hidden bg-[#0f1720] min-h-[100vh] sm:min-h-[100vh] flex items-center">
@@ -197,7 +206,7 @@ const Pricing = () => {
         </motion.p>
       </div>
 
-      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full max-w-7xl">
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-7xl">
   {pricingPlans.map((plan, idx) => (
   <motion.div
   key={idx}
@@ -221,10 +230,23 @@ const Pricing = () => {
       Most Popular
     </span>
   )}
+  {userProfile && userProfile.plan === plan.planType && (
+    <span
+      className="absolute top-3 left-3 font-bold px-3 py-1 rounded-full text-white text-sm z-10"
+      style={{ background: "linear-gradient(to right, #507ADB, #9B49E9)" }}
+    >
+      Current Plan
+    </span>
+  )}
 
-  <h2 className="text-2xl font-bold text-white mb-2">{plan.title}</h2>
+  <h2 className={`text-2xl font-bold text-white mb-2 ${
+    (plan.popular || (userProfile && userProfile.plan === plan.planType)) ? 'mt-10' : ''
+  }`}>{plan.title}</h2>
   <p className="text-gray-400 mb-4">{plan.subtitle}</p>
-  <p className="text-3xl font-extrabold text-white mb-6">{plan.price}</p>
+  <p className="text-3xl font-extrabold text-white mb-6">
+    {plan.price}
+    {plan.planType !== "free" && <span className="text-lg text-gray-400"> one-time</span>}
+  </p>
 
   <ul className="flex-1 space-y-2 mb-6">
     {plan.features.map((feature, i) => (
@@ -234,14 +256,22 @@ const Pricing = () => {
     ))}
   </ul>
 
+  {error && idx === pricingPlans.length - 1 && (
+    <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg">
+      <p className="text-red-400 text-sm">{error}</p>
+    </div>
+  )}
+
   <motion.button
-    className="w-full py-2 rounded-md font-bold text-white hover:opacity-90 transition duration-300"
+    className="w-full py-2 rounded-md font-bold text-white hover:opacity-90 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
     style={{ background: "linear-gradient(to right, #507ADB, #9B49E9)" }}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
+    whileHover={{ scale: isLoading ? 1 : 1.05 }}
+    whileTap={{ scale: isLoading ? 1 : 0.95 }}
     transition={{ duration: 0.3 }}
+    onClick={() => handlePayment(plan.planType)}
+    disabled={isLoading}
   >
-    {plan.button.text}
+    {isLoading ? "Processing..." : plan.button.text}
   </motion.button>
 </motion.div>
 

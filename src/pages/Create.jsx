@@ -4,7 +4,6 @@ import images from "../assets/images";
 import { Play, Pause, Bookmark, Share2, Loader2, Download, AlertCircle } from "lucide-react";
 import { useGenerateMusicMutation, useLazyGetTaskQuery } from "../services/api/generationApi";
 
-const styles = ["Synthwave", "Lo-Fi", "Classical", "Jazz", "Rock", "Electronic"];
 const models = [
   { value: "V4", label: "V4 (Max 4 min, improved vocal quality)" },
   { value: "V4_5", label: "V4.5 (Max 8 min, smarter prompts)" },
@@ -58,7 +57,7 @@ export default function Create() {
   const [instrumental, setInstrumental] = useState(true);
   const [model, setModel] = useState("V4");
   const [prompt, setPrompt] = useState("");
-  const [style, setStyle] = useState("Synthwave");
+  const [style, setStyle] = useState("");
   const [title, setTitle] = useState("");
   const [negativeTags, setNegativeTags] = useState("");
   const [vocalGender, setVocalGender] = useState("");
@@ -594,18 +593,14 @@ export default function Create() {
                       ({style.length}/{limits.style})
                     </span>
                   </label>
-                  <select
-                    className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                  <input
+                    type="text"
+                    placeholder="e.g., Synthwave, Lo-Fi, Electronic (comma-separated or space-separated)"
                     value={style}
                     onChange={(e) => setStyle(e.target.value.slice(0, limits.style))}
                     disabled={isProcessing}
-                  >
-                    {styles.map((s) => (
-                      <option key={s} value={s} className="bg-[#39355C]">
-                        {s}
-                      </option>
-                    ))}
-                  </select>
+                    className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
                 </div>
 
                 <div className="mb-4">
