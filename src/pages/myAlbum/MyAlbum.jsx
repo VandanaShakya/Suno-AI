@@ -15,6 +15,37 @@ const formatDuration = (seconds) => {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
+// Skeleton Track Card Component
+const SkeletonTrackCard = () => {
+  return (
+    <div className="relative bg-white/10 backdrop-blur-lg rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-white/20 flex flex-col animate-pulse">
+      {/* Skeleton Image */}
+      <div className="w-full h-40 sm:h-48 bg-white/20" />
+
+      <div className="p-3 sm:p-4 flex flex-col gap-2 flex-1">
+        {/* Skeleton Title */}
+        <div className="h-5 sm:h-6 md:h-7 bg-white/20 rounded w-3/4" />
+
+        {/* Skeleton Model Name */}
+        <div className="h-3 sm:h-4 bg-white/20 rounded w-1/2" />
+
+        {/* Skeleton Tags and Duration */}
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+          <div className="h-4 sm:h-5 bg-white/20 rounded px-1.5 sm:px-2 py-0.5 sm:py-1 w-16 sm:w-20" />
+          <div className="h-2 w-2 bg-white/20 rounded-full" />
+          <div className="h-4 sm:h-5 bg-white/20 rounded w-8 sm:w-10" />
+        </div>
+
+        {/* Skeleton Action Buttons */}
+        <div className="flex justify-between items-center mt-auto pt-2">
+          <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-white/20 rounded-lg" />
+          <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-white/20 rounded-lg" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function MyAlbum() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,12 +62,72 @@ export default function MyAlbum() {
   const previousTokenRef = useRef(null);
   const audioRefsRef = useRef({});
   const currentTokenRef = useRef(token);
+  const queryTokenRef = useRef(token); // Track the token that should be used for the current query
 
   // Keep refs in sync
   useEffect(() => {
     audioRefsRef.current = audioRefs;
     currentTokenRef.current = token;
   }, [audioRefs, token]);
+
+  // Reset API state and clear local state IMMEDIATELY when token changes (before query can serve cached data)
+  useEffect(() => {
+    const currentToken = token;
+    const prevToken = previousTokenRef.current;
+
+    if (isAuthenticated && currentToken) {
+      if (prevToken !== null && currentToken !== prevToken) {
+        // User changed - reset everything IMMEDIATELY before RTK Query can serve cached data
+        dispatch(generationApi.util.resetApiState());
+        dispatch(generationApi.util.invalidateTags(["AudioResult"]));
+        setAllTracks([]);
+        setNextCursor(undefined);
+        setHasMore(false);
+        setPlayingId(null);
+        setAudioProgress({});
+        
+        // Stop all audio playback
+        Object.values(audioRefsRef.current).forEach((audio) => {
+          if (audio) {
+            audio.pause();
+            audio.src = "";
+          }
+        });
+        setAudioRefs({});
+        audioRefsRef.current = {};
+        
+        // Update query token ref to match new token
+        queryTokenRef.current = currentToken;
+      } else if (prevToken === null) {
+        // Initial mount - reset API state and set query token
+        dispatch(generationApi.util.resetApiState());
+        dispatch(generationApi.util.invalidateTags(["AudioResult"]));
+        queryTokenRef.current = currentToken;
+      }
+      previousTokenRef.current = currentToken;
+    } else if (!isAuthenticated && prevToken) {
+      // User logged out - reset everything
+      dispatch(generationApi.util.resetApiState());
+      dispatch(generationApi.util.invalidateTags(["AudioResult"]));
+      setAllTracks([]);
+      setNextCursor(undefined);
+      setHasMore(false);
+      setPlayingId(null);
+      setAudioProgress({});
+      
+      // Stop all audio playback
+      Object.values(audioRefsRef.current).forEach((audio) => {
+        if (audio) {
+          audio.pause();
+          audio.src = "";
+        }
+      });
+      setAudioRefs({});
+      audioRefsRef.current = {};
+      previousTokenRef.current = null;
+      queryTokenRef.current = null;
+    }
+  }, [isAuthenticated, token, dispatch]);
 
   const { data, isLoading, error, refetch } = useGetUserAudioQuery(
     { limit: 20, cursor: undefined },
@@ -55,15 +146,18 @@ export default function MyAlbum() {
     }
   }, [isAuthenticated, navigate]);
 
-  // Clear state immediately when token changes (runs first to prevent stale data)
+  // Reset API state and clear local state IMMEDIATELY when token changes (before query can serve cached data)
   useEffect(() => {
     const currentToken = token;
     const prevToken = previousTokenRef.current;
 
-    // If token changed (including initial mount after user switch), clear state immediately
     if (isAuthenticated && currentToken) {
       if (prevToken !== null && currentToken !== prevToken) {
-        // User changed - clear state immediately to prevent stale cached data
+        // User changed - reset API state IMMEDIATELY before RTK Query can serve cached data
+        dispatch(generationApi.util.resetApiState());
+        dispatch(generationApi.util.invalidateTags(["AudioResult"]));
+        
+        // Clear local state immediately
         setAllTracks([]);
         setNextCursor(undefined);
         setHasMore(false);
@@ -79,10 +173,20 @@ export default function MyAlbum() {
         });
         setAudioRefs({});
         audioRefsRef.current = {};
+        
+        // Update query token ref to match new token
+        queryTokenRef.current = currentToken;
+      } else if (prevToken === null) {
+        // Initial mount - reset API state and set query token
+        dispatch(generationApi.util.resetApiState());
+        dispatch(generationApi.util.invalidateTags(["AudioResult"]));
+        queryTokenRef.current = currentToken;
       }
       previousTokenRef.current = currentToken;
     } else if (!isAuthenticated && prevToken) {
       // User logged out - reset everything
+      dispatch(generationApi.util.resetApiState());
+      dispatch(generationApi.util.invalidateTags(["AudioResult"]));
       setAllTracks([]);
       setNextCursor(undefined);
       setHasMore(false);
@@ -99,48 +203,40 @@ export default function MyAlbum() {
       setAudioRefs({});
       audioRefsRef.current = {};
       previousTokenRef.current = null;
+      queryTokenRef.current = null;
     }
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, dispatch]);
 
-  // Invalidate cache and refetch when token changes
+  // Refetch when token changes (after reset in previous effect)
   useEffect(() => {
     const currentToken = token;
     const prevToken = previousTokenRef.current;
 
     if (isAuthenticated && currentToken && prevToken !== null && currentToken !== prevToken) {
-      // User changed - reset query state for this API, invalidate cache, and refetch
-      dispatch(generationApi.util.resetApiState());
-      dispatch(generationApi.util.invalidateTags(["AudioResult"]));
-      // Small delay to ensure state is reset before refetch
+      // User changed - refetch after reset (small delay to ensure state is reset)
       setTimeout(() => {
         refetch();
       }, 10);
-    } else if (!isAuthenticated && prevToken) {
-      // User logged out - reset query state and invalidate cache
-      dispatch(generationApi.util.resetApiState());
-      dispatch(generationApi.util.invalidateTags(["AudioResult"]));
-    } else if (isAuthenticated && currentToken && prevToken === null) {
-      // Initial mount - clear any potentially stale cached data by resetting and invalidating
-      // This ensures we don't show previous user's data on first load
-      dispatch(generationApi.util.resetApiState());
-      dispatch(generationApi.util.invalidateTags(["AudioResult"]));
     }
-  }, [isAuthenticated, token, refetch, dispatch]);
+  }, [isAuthenticated, token, refetch]);
 
-  // Update tracks when data changes - but only if token matches current token
+  // Update tracks when data changes - STRICT token validation to prevent stale cached data
   useEffect(() => {
-    // Only update if data exists and token matches (prevents stale cached data)
-    if (data && token && token === currentTokenRef.current) {
+    const currentToken = token;
+    const expectedToken = queryTokenRef.current;
+
+    // Only accept data if current token matches the expected token for this query
+    // This prevents stale cached data from being displayed when users switch
+    if (data && currentToken && currentToken === expectedToken) {
       setAllTracks(data.data || []);
       setNextCursor(data.pagination?.nextCursor);
       setHasMore(data.pagination?.hasMore || false);
-    } else if (data && token && token !== currentTokenRef.current) {
-      // Token changed while data was loading - ignore this stale data
-      setAllTracks([]);
-      setNextCursor(undefined);
-      setHasMore(false);
-    } else if (!token && data) {
-      // No token but data exists (shouldn't happen, but clear just in case)
+    } else if (data && currentToken && currentToken !== expectedToken) {
+      // Token mismatch - this is stale cached data, ignore it completely
+      // Don't update state at all
+      return;
+    } else if (data && !currentToken) {
+      // No token but data exists - clear state
       setAllTracks([]);
       setNextCursor(undefined);
       setHasMore(false);
@@ -322,7 +418,7 @@ export default function MyAlbum() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-2 sm:p-4 md:p-6 lg:p-8 relative overflow-x-hidden">
+    <div className="pt-10 min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-2 sm:p-4 md:p-6 lg:p-8 relative overflow-x-hidden">
       <div className="relative z-10 w-full max-w-[95%] sm:max-w-[90%] md:max-w-[85%] lg:max-w-[80%] xl:max-w-[70%] mx-auto py-8 sm:py-12 md:py-16 lg:py-20">
         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 md:mb-8 text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent px-2">
           My Album
@@ -338,11 +434,12 @@ export default function MyAlbum() {
           </div>
         )}
 
-        {/* Loading State */}
+        {/* Skeleton Loading State */}
         {isLoading && allTracks.length === 0 && (
-          <div className="flex flex-col items-center justify-center min-h-[400px]">
-            <Loader2 className="w-12 h-12 animate-spin text-purple-400 mb-4" />
-            <p className="text-lg font-semibold">Loading your music...</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <SkeletonTrackCard key={`skeleton-${index}`} />
+            ))}
           </div>
         )}
 
@@ -361,8 +458,8 @@ export default function MyAlbum() {
           </div>
         )}
 
-        {/* Tracks Grid */}
-        {allTracks.length > 0 && (
+        {/* Tracks Grid - Only show when data is loaded */}
+        {!isLoading && allTracks.length > 0 && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
               {allTracks.map((track) => {
