@@ -194,87 +194,162 @@ const cardVariants = {
   },
 };
   const [openIndex, setOpenIndex] = useState(null);
+
+
+ 
+
+   const texts = [
+    "Create studio-quality music with AI in seconds.",
+    "Turn your ideas into professional tracks instantly.",
+    "No skills needed — just type and generate music.",
+  ];
+
+  const [displayText, setDisplayText] = useState("");
+  const [textIndex, setTextIndex] = useState(0);
+ 
+
+  useEffect(() => {
+    const currentText = texts[textIndex];
+    let timeout;
+
+    if (!isDeleting && charIndex < currentText.length) {
+      timeout = setTimeout(() => {
+        setDisplayText(currentText.slice(0, charIndex + 1));
+        setCharIndex(charIndex + 1);
+      }, 60);
+    } else if (isDeleting && charIndex > 0) {
+      timeout = setTimeout(() => {
+        setDisplayText(currentText.slice(0, charIndex - 1));
+        setCharIndex(charIndex - 1);
+      }, 40);
+    } else if (!isDeleting && charIndex === currentText.length) {
+      timeout = setTimeout(() => setIsDeleting(true), 1200);
+    } else if (isDeleting && charIndex === 0) {
+      setIsDeleting(false);
+      setTextIndex((prev) => (prev + 1) % texts.length);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [charIndex, isDeleting, textIndex]);
+
+  /* ================= HANDLE GENERATE ================= */
+ 
   return (
     <>
     <div className="overflow-x-hidden">
  <motion.section
-  className="relative bg-[#0B0D11] mt-20 min-h-screen flex items-center justify-center px-4 sm:px-6 overflow-hidden"
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ duration: 0.8 }}
->
-  {/* BACKGROUND GLOWS */}
-  <div className="absolute top-1/4 -left-20 w-72 sm:w-96 h-72 sm:h-96 bg-[#A146EA]/10 blur-[120px] rounded-full" />
-
-  <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center relative z-10">
-    
-    {/* LEFT CONTENT */}
-    <div className="flex flex-col gap-6 text-center lg:text-left ">
-      <motion.h1
-  className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight lg:leading-[1.1] text-left"
-  initial={{ x: -30, opacity: 0 }}
-  animate={{ x: 0, opacity: 1 }}
->
-  Generate Professional Music in <br />
-  <span className="text-white">Seconds. Just Type and Listen</span>
-</motion.h1>
-
-<p className="text-white/50 text-base text-left max-w-lg">
-  AI music generator tool is your AI music generator tool.
-</p>
-
-
-      {/* PILL INPUT BAR */}
-      <div className="relative mt-4 group w-full max-w-2xl mx-auto lg:mx-0">
-        <div className="absolute -inset-1 bg-gradient-to-r from-[#A146EA]/20 to-[#4B7DDA]/20 rounded-full blur opacity-75 group-focus-within:opacity-100 transition duration-300" />
-        
-      <div className="relative flex items-center bg-[#1A1D23] border border-white/10 rounded-full p-2 pl-4 sm:pl-6 gap-2 w-full max-w-2xl">
-  <input
-    type="text"
-    placeholder="Describe the track you want..."
-    value={prompt}
-    onChange={(e) => setPrompt(e.target.value)}
-    onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
-    className="bg-transparent border-none outline-none text-white flex-1 text-sm sm:text-base placeholder:text-white/30 px-2"
-  />
-
-  <button
-    onClick={handleGenerate}
-    className="bg-gradient-to-r from-[#4B7DDA] to-[#A146EA] text-white px-4 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold hover:scale-105 transition-transform active:scale-95 whitespace-nowrap"
-  >
-    Generate Now
-  </button>
-</div>
-
-      </div>
-    </div>
-
-    {/* RIGHT CONTENT */}
-    <motion.div
-      className="relative flex justify-center items-center mt-10 lg:mt-0"
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 1 }}
+      className="
+        relative bg-[#0B0D11]
+        pt-28 sm:pt-32 lg:pt-0
+        min-h-screen flex items-center justify-center
+        px-4 sm:px-6 overflow-hidden
+      "
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
     >
-      {/* AUDIO WAVES */}
-     
+      {/* ================= BACKGROUND ================= */}
+      <img
+        src={images.sunoHeroImage}
+        alt="Background"
+        className="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none"
+      />
 
       <img
-        src={images.sunoRight}
-        alt="AI Music Brain"
-        className="relative z-20 w-[70%] sm:w-[65%] md:w-[60%] lg:w-full max-w-md lg:max-w-none drop-shadow-[0_0_50px_rgba(161,70,234,0.3)]"
+        src={images.bgCenterGlow}
+        alt="Glow"
+        className="
+          absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+          w-[140%] sm:w-[120%] md:w-[100%] lg:w-[85%]
+          opacity-50 blur-3xl pointer-events-none
+        "
       />
-    </motion.div>
 
-  </div>
-</motion.section>
+      {/* ================= CONTENT ================= */}
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+
+        {/* ================= LEFT ================= */}
+        <div className="flex flex-col gap-6 text-center lg:text-left">
+
+          <motion.h1
+            className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+          >
+            Generate Professional Music in <br />
+            <span className="text-white">Seconds. Just Type and Listen</span>
+          </motion.h1>
+
+          {/* TYPEWRITER TEXT */}
+          <div className="text-white/60 text-base md:text-lg max-w-lg mx-auto lg:mx-0 min-h-[48px] flex items-center justify-center lg:justify-start">
+            <div>{displayText}</div>
+            <div className="ml-1 w-[2px] h-5 bg-white animate-pulse" />
+          </div>
+
+          {/* INPUT BAR */}
+          <div className="relative mt-4 group w-full max-w-2xl mx-auto lg:mx-0">
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#A146EA]/20 to-[#4B7DDA]/20 rounded-full blur opacity-75 group-focus-within:opacity-100 transition" />
+
+            <div className="relative flex items-center bg-[#1A1D23] border border-white/10 rounded-full p-2 pl-4 sm:pl-6 gap-2">
+              <input
+                type="text"
+                placeholder="Describe the track you want..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
+                className="bg-transparent outline-none text-white flex-1 text-sm sm:text-base placeholder:text-white/30 px-2"
+              />
+
+              <button
+                onClick={handleGenerate}
+                className="
+                  bg-gradient-to-r from-[#4B7DDA] to-[#A146EA]
+                  text-white px-4 sm:px-8 py-2.5 sm:py-3 rounded-full
+                  font-semibold hover:scale-105 transition-transform
+                  active:scale-95 whitespace-nowrap
+                "
+              >
+                Generate Now
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* ================= RIGHT ================= */}
+        <motion.div
+          className="relative flex justify-center items-center"
+          initial={{ scale: 0.85, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          <motion.img
+            src={images.sunoRight}
+            alt="AI Music"
+            className="
+              relative z-20
+              w-[95%] sm:w-[90%] md:w-[85%]
+              lg:w-[125%] xl:w-[145%]
+              max-w-none
+              drop-shadow-[0_0_80px_rgba(161,70,234,0.4)]
+            "
+            animate={{ y: [0, -22, 0] }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        </motion.div>
+
+      </div>
+    </motion.section>
 
 
 
       <section className="px-4 py-16 bg-black min-h-screen">
         <div className="relative flex flex-col items-center justify-center text-center px-2 sm:px-4 w-full max-w-[95%] md:max-w-[80%] mx-auto">
           <h1
-            className="text-white font-bold text-2xl sm:text-3xl md:text-5xl lg:text-6xl leading-snug md:leading-tight drop-shadow-lg text-left md:text-center"
+            className="text-white font-bold text-2xqwqqql sm:text-3xl md:text-5xl lg:text-6xl leading-snug md:leading-tight drop-shadow-lg text-left md:text-center"
           >
             Experience the Future of{" "}
             <span className="bg-gradient-to-r from-[#A146EA] to-[#4B7DDA] bg-clip-text text-transparent">

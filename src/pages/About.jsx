@@ -10,6 +10,8 @@ import { FiMusic, FiZap, FiHeadphones, FiGlobe, FiShield, FiPlay, FiArrowRight }
 
 /* Theme colors used inline in Tailwind classes via hex */
 export default function About() {
+
+   
   const featureIcons = [FiMusic, FiZap, FiHeadphones, FiGlobe, FiShield, FiPlay];
   const basic = { initial: { opacity: 0, y: 12 }, whileInView: { opacity: 1, y: 0 }, transition: { duration: 0.6 }, viewport: { once: true, amount: 0.2 } };
   const subtle = (delay = 0) => ({ initial: { opacity: 0 }, whileInView: { opacity: 1 }, transition: { delay, duration: 0.7 }, viewport: { once: true, amount: 0.2 } });

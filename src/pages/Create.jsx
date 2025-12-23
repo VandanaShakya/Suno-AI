@@ -478,7 +478,7 @@ export default function Create() {
   const showPrompt = !customMode || !instrumental;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-2 sm:p-4 md:p-6 lg:p-8 relative overflow-x-hidden">
+    <div className="pt-20 min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white p-2 sm:p-4 md:p-6 lg:p-8 relative overflow-x-hidden">
        <img
               src={images.createBackImage}
               alt="background"

@@ -22,6 +22,7 @@ import MyAlbum from "./pages/myAlbum/MyAlbum";
 import PaymentSuccess from "./pages/payment/PaymentSuccess";
 import PaymentCancel from "./pages/payment/PaymentCancel";
 import Invoices from "./pages/invoices/Invoices";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -58,6 +59,7 @@ function App() {
         {!loading && (
           <>
             <Navbar />
+            <ScrollToTop/>
             <main className="pt-6">
               <Routes>
                 <Route path="/" element={<Home />} />
