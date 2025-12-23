@@ -1,6 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { API_BASE_URL } from "../../config/api";
 import { setCredentials, logout } from "../../store/slices/authSlice";
+import { baseQueryWithToast } from "../../utils/baseQueryWithToast";
 
 /**
  * Auth API Slice
@@ -8,7 +9,7 @@ import { setCredentials, logout } from "../../store/slices/authSlice";
  */
 export const authApi = createApi({
   reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({
+  baseQuery: baseQueryWithToast({
     baseUrl: `${API_BASE_URL}/v1/auth`,
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth?.token;

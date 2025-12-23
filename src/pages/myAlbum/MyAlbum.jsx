@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Play, Pause, Download, Loader2, AlertCircle } from "lucide-react";
-import { useGetUserAudioQuery } from "../../services/api/generationApi";
+import { useGetUserAudioQuery, useDownloadAudioMutation, generationApi } from "../../services/api/generationApi";
+import { useGetUserProfileQuery } from "../../services/api/userApi";
 import { store } from "../../store/store";
 import { API_BASE_URL } from "../../config/api";
 
@@ -16,7 +17,10 @@ const formatDuration = (seconds) => {
 
 export default function MyAlbum() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth?.isAuthenticated);
+  const token = useSelector((state) => state.auth?.token);
+  const user = useSelector((state) => state.auth?.user);
   
   const [allTracks, setAllTracks] = useState([]);
   const [playingId, setPlayingId] = useState(null);
@@ -24,11 +28,25 @@ export default function MyAlbum() {
   const [audioProgress, setAudioProgress] = useState({});
   const [nextCursor, setNextCursor] = useState(undefined);
   const [hasMore, setHasMore] = useState(false);
+  const previousTokenRef = useRef(null);
+  const audioRefsRef = useRef({});
+  const currentTokenRef = useRef(token);
 
-  const { data, isLoading, error } = useGetUserAudioQuery(
+  // Keep refs in sync
+  useEffect(() => {
+    audioRefsRef.current = audioRefs;
+    currentTokenRef.current = token;
+  }, [audioRefs, token]);
+
+  const { data, isLoading, error, refetch } = useGetUserAudioQuery(
     { limit: 20, cursor: undefined },
-    { skip: !isAuthenticated }
+    { 
+      skip: !isAuthenticated,
+      refetchOnMountOrArgChange: true, // Force refetch when component mounts or args change
+    }
   );
+  const [downloadAudio] = useDownloadAudioMutation();
+  const { data: userProfile } = useGetUserProfileQuery(undefined, { skip: !isAuthenticated });
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -37,14 +55,97 @@ export default function MyAlbum() {
     }
   }, [isAuthenticated, navigate]);
 
-  // Update tracks when data changes
+  // Clear state immediately when token changes (runs first to prevent stale data)
   useEffect(() => {
-    if (data) {
+    const currentToken = token;
+    const prevToken = previousTokenRef.current;
+
+    // If token changed (including initial mount after user switch), clear state immediately
+    if (isAuthenticated && currentToken) {
+      if (prevToken !== null && currentToken !== prevToken) {
+        // User changed - clear state immediately to prevent stale cached data
+        setAllTracks([]);
+        setNextCursor(undefined);
+        setHasMore(false);
+        setPlayingId(null);
+        setAudioProgress({});
+        
+        // Stop all audio playback
+        Object.values(audioRefsRef.current).forEach((audio) => {
+          if (audio) {
+            audio.pause();
+            audio.src = "";
+          }
+        });
+        setAudioRefs({});
+        audioRefsRef.current = {};
+      }
+      previousTokenRef.current = currentToken;
+    } else if (!isAuthenticated && prevToken) {
+      // User logged out - reset everything
+      setAllTracks([]);
+      setNextCursor(undefined);
+      setHasMore(false);
+      setPlayingId(null);
+      setAudioProgress({});
+      
+      // Stop all audio playback
+      Object.values(audioRefsRef.current).forEach((audio) => {
+        if (audio) {
+          audio.pause();
+          audio.src = "";
+        }
+      });
+      setAudioRefs({});
+      audioRefsRef.current = {};
+      previousTokenRef.current = null;
+    }
+  }, [isAuthenticated, token]);
+
+  // Invalidate cache and refetch when token changes
+  useEffect(() => {
+    const currentToken = token;
+    const prevToken = previousTokenRef.current;
+
+    if (isAuthenticated && currentToken && prevToken !== null && currentToken !== prevToken) {
+      // User changed - reset query state for this API, invalidate cache, and refetch
+      dispatch(generationApi.util.resetApiState());
+      dispatch(generationApi.util.invalidateTags(["AudioResult"]));
+      // Small delay to ensure state is reset before refetch
+      setTimeout(() => {
+        refetch();
+      }, 10);
+    } else if (!isAuthenticated && prevToken) {
+      // User logged out - reset query state and invalidate cache
+      dispatch(generationApi.util.resetApiState());
+      dispatch(generationApi.util.invalidateTags(["AudioResult"]));
+    } else if (isAuthenticated && currentToken && prevToken === null) {
+      // Initial mount - clear any potentially stale cached data by resetting and invalidating
+      // This ensures we don't show previous user's data on first load
+      dispatch(generationApi.util.resetApiState());
+      dispatch(generationApi.util.invalidateTags(["AudioResult"]));
+    }
+  }, [isAuthenticated, token, refetch, dispatch]);
+
+  // Update tracks when data changes - but only if token matches current token
+  useEffect(() => {
+    // Only update if data exists and token matches (prevents stale cached data)
+    if (data && token && token === currentTokenRef.current) {
       setAllTracks(data.data || []);
       setNextCursor(data.pagination?.nextCursor);
       setHasMore(data.pagination?.hasMore || false);
+    } else if (data && token && token !== currentTokenRef.current) {
+      // Token changed while data was loading - ignore this stale data
+      setAllTracks([]);
+      setNextCursor(undefined);
+      setHasMore(false);
+    } else if (!token && data) {
+      // No token but data exists (shouldn't happen, but clear just in case)
+      setAllTracks([]);
+      setNextCursor(undefined);
+      setHasMore(false);
     }
-  }, [data]);
+  }, [data, token]);
 
   // Load more tracks
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -172,7 +273,23 @@ export default function MyAlbum() {
   // Download audio
   const handleDownload = async (id, audioUrl, title) => {
     try {
-      const response = await fetch(audioUrl);
+      // Check if user can download (frontend check for UX)
+      if (!userProfile?.canDownload) {
+        console.error("Download not available for free tier. Please upgrade to download music.");
+        return;
+      }
+
+      // Call backend download endpoint
+      const result = await downloadAudio(id).unwrap();
+      const downloadUrl = result.downloadUrl || result.audioUrl;
+      
+      if (!downloadUrl) {
+        console.error("Download URL not available");
+        return;
+      }
+
+      // Fetch and download the file
+      const response = await fetch(downloadUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -183,6 +300,7 @@ export default function MyAlbum() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err) {
+      // Error toast will be shown by baseQueryWithToast for API errors
       console.error("Failed to download audio:", err);
     }
   };
@@ -329,16 +447,18 @@ export default function MyAlbum() {
                           )}
                         </button>
                         <div className="flex gap-1.5 sm:gap-2 md:gap-3 text-gray-400">
-                          <button
-                            onClick={() =>
-                              handleDownload(track.audioId, audioUrl, track.title)
-                            }
-                            className="hover:text-white transition p-1.5 sm:p-2 hover:bg-white/10 rounded-lg flex-shrink-0"
-                            title="Download"
-                            aria-label="Download"
-                          >
-                            <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
-                          </button>
+                          {userProfile?.canDownload && (
+                            <button
+                              onClick={() =>
+                                handleDownload(track.audioId, audioUrl, track.title)
+                              }
+                              className="hover:text-white transition p-1.5 sm:p-2 hover:bg-white/10 rounded-lg flex-shrink-0"
+                              title="Download"
+                              aria-label="Download"
+                            >
+                              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>

@@ -1,5 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { API_BASE_URL } from "../../config/api";
+import { baseQueryWithToast } from "../../utils/baseQueryWithToast";
 
 /**
  * Invoice API Slice
@@ -7,7 +8,7 @@ import { API_BASE_URL } from "../../config/api";
  */
 export const invoiceApi = createApi({
   reducerPath: "invoiceApi",
-  baseQuery: fetchBaseQuery({
+  baseQuery: baseQueryWithToast({
     baseUrl: `${API_BASE_URL}/v1`,
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth?.token;

@@ -1,5 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { API_BASE_URL } from "../../config/api";
+import { baseQueryWithToast } from "../../utils/baseQueryWithToast";
 
 /**
  * Generation API Slice
@@ -7,7 +8,7 @@ import { API_BASE_URL } from "../../config/api";
  */
 export const generationApi = createApi({
   reducerPath: "generationApi",
-  baseQuery: fetchBaseQuery({
+  baseQuery: baseQueryWithToast({
     baseUrl: `${API_BASE_URL}/v1`,
     prepareHeaders: (headers, { getState }) => {
       const token = getState().auth?.token;
@@ -46,6 +47,12 @@ export const generationApi = createApi({
       query: () => "/user/credits",
       providesTags: ["UserCredits"],
     }),
+    downloadAudio: builder.mutation({
+      query: (audioId) => ({
+        url: `/audio/${audioId}/download`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -55,5 +62,6 @@ export const {
   useLazyGetTaskQuery,
   useGetUserAudioQuery,
   useGetUserCreditsQuery,
+  useDownloadAudioMutation,
 } = generationApi;
 

@@ -23,6 +23,7 @@ import PaymentSuccess from "./pages/payment/PaymentSuccess";
 import PaymentCancel from "./pages/payment/PaymentCancel";
 import Invoices from "./pages/invoices/Invoices";
 import ScrollToTop from "./components/ScrollToTop";
+import { Toaster } from "sonner";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -44,6 +45,30 @@ function App() {
           background-color: #030712;
         }
       `}</style>
+
+      {/* Toast notifications */}
+      <Toaster 
+        position="bottom-right" 
+        richColors
+        toastOptions={{
+          style: {
+            background: '#131B27',
+            border: '1px solid rgba(80, 122, 219, 0.3)',
+            color: '#ffffff',
+          },
+          className: 'sonner-toast',
+          classNames: {
+            toast: 'bg-[#131B27] border border-[#507ADB]/30 text-white',
+            success: 'bg-[#131B27] border border-[#507ADB]/50',
+            error: 'bg-[#131B27] border border-red-500/50',
+            warning: 'bg-[#131B27] border border-yellow-500/50',
+            info: 'bg-[#131B27] border border-[#507ADB]/50',
+            description: 'text-white/70',
+            actionButton: 'bg-[#507ADB] hover:bg-[#9B49E9]',
+            cancelButton: 'bg-white/10 hover:bg-white/20',
+          },
+        }}
+      />
 
       {/* Wrap everything */}
       <div className=" ">

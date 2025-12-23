@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import images from "../assets/images";
 import { Play, Pause, Bookmark, Share2, Loader2, Download, AlertCircle } from "lucide-react";
-import { useGenerateMusicMutation, useLazyGetTaskQuery } from "../services/api/generationApi";
+import { useGenerateMusicMutation, useLazyGetTaskQuery, useDownloadAudioMutation } from "../services/api/generationApi";
+import { useGetUserProfileQuery } from "../services/api/userApi";
 
 const models = [
   { value: "V4", label: "V4 (Max 4 min, improved vocal quality)" },
@@ -82,6 +83,8 @@ export default function Create() {
 
   const [generateMusic, { isLoading: isGenerating }] = useGenerateMusicMutation();
   const [getTask, { data: taskData, isLoading: isPolling }] = useLazyGetTaskQuery();
+  const [downloadAudio] = useDownloadAudioMutation();
+  const { data: userProfile } = useGetUserProfileQuery(undefined, { skip: !isAuthenticated });
 
   const handleModeSelection = (mode) => {
     if (mode === "custom") {
@@ -459,7 +462,23 @@ export default function Create() {
   // Download audio
   const handleDownload = async (id, audioUrl, title) => {
     try {
-      const response = await fetch(audioUrl);
+      // Check if user can download (frontend check for UX)
+      if (!userProfile?.canDownload) {
+        setError("Download not available for free tier. Please upgrade to download music.");
+        return;
+      }
+
+      // Call backend download endpoint
+      const result = await downloadAudio(id).unwrap();
+      const downloadUrl = result.downloadUrl || result.audioUrl;
+      
+      if (!downloadUrl) {
+        setError("Download URL not available");
+        return;
+      }
+
+      // Fetch and download the file
+      const response = await fetch(downloadUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -470,7 +489,10 @@ export default function Create() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err) {
-      setError("Failed to download audio");
+      // Error toast will be shown by baseQueryWithToast for API errors
+      if (!err?.data) {
+        setError("Failed to download audio");
+      }
     }
   };
 
@@ -819,14 +841,16 @@ export default function Create() {
                             )}
                           </button>
                           <div className="flex gap-1.5 sm:gap-2 md:gap-3 text-gray-400">
-                            <button
-                              onClick={() => handleDownload(m.id, m.audioUrl, m.title)}
-                              className="hover:text-white transition p-1.5 sm:p-2 hover:bg-white/10 rounded-lg flex-shrink-0"
-                              title="Download"
-                              aria-label="Download"
-                            >
-                              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
-                            </button>
+                            {userProfile?.canDownload && (
+                              <button
+                                onClick={() => handleDownload(m.id, m.audioUrl, m.title)}
+                                className="hover:text-white transition p-1.5 sm:p-2 hover:bg-white/10 rounded-lg flex-shrink-0"
+                                title="Download"
+                                aria-label="Download"
+                              >
+                                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                              </button>
+                            )}
                             <button 
                               className="hover:text-white transition p-1.5 sm:p-2 hover:bg-white/10 rounded-lg flex-shrink-0"
                               aria-label="Bookmark"
