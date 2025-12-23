@@ -488,18 +488,18 @@ export default function MyAlbum() {
                     />
 
                     <div className="p-3 sm:p-4 flex flex-col gap-2 flex-1">
-                      <h3 className="font-semibold text-sm sm:text-base md:text-lg truncate">
+                      <h3 className="font-semibold text-sm sm:text-base md:text-lg truncate" title={track.title}>
                         {track.title}
                       </h3>
-                      <span className="text-gray-400 text-[10px] sm:text-xs md:text-sm">
+                      <span className="text-gray-400 text-[10px] sm:text-xs md:text-sm truncate" title={track.modelName}>
                         {track.modelName}
                       </span>
-                      <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs md:text-sm text-gray-300 flex-wrap">
-                        <span className="bg-purple-500/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs">
+                      <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs md:text-sm text-gray-300 min-w-0">
+                        <span className="bg-purple-500/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs truncate max-w-[60%] sm:max-w-[70%]" title={track.tags || "Music"}>
                           {track.tags || "Music"}
                         </span>
-                        <span>•</span>
-                        <span className="tabular-nums">
+                        <span className="flex-shrink-0">•</span>
+                        <span className="tabular-nums flex-shrink-0">
                           {formatDuration(progress.duration || track.duration)}
                         </span>
                       </div>
