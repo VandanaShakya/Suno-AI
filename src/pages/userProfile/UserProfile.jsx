@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useGetUserProfileQuery } from '../../services/api/userApi';
-import { useGetUserAudioQuery } from '../../services/api/generationApi';
+import { useGetUserAudioQuery, useGetUserAudioCountQuery, useDownloadAudioMutation } from '../../services/api/generationApi';
 import { useGetInvoicesQuery } from '../../services/api/invoiceApi';
 import InvoiceCard from '../../components/InvoiceCard';
 import InvoiceDetail from '../../components/InvoiceDetail';
-import { Play, Pause, Loader2, AlertCircle, Music, Sparkles, Zap, Crown, FileText } from 'lucide-react';
+import { Play, Pause, Loader2, AlertCircle, Music, Sparkles, Zap, Crown, FileText, Download } from 'lucide-react';
+import { API_BASE_URL } from '../../config/api';
 
 // Define the theme colors
 const THEME_ACCENT = '#507ADB';
@@ -57,14 +58,23 @@ const UserProfile = () => {
     { skip: !isAuthenticated, refetchOnMountOrArgChange: true }
   );
 
+  // Fetch total audio count
+  const { data: audioCountData } = useGetUserAudioCountQuery(undefined, {
+    skip: !isAuthenticated,
+    refetchOnMountOrArgChange: true,
+  });
+
   // Fetch recent invoices (limit to 5 for profile page)
   const { data: invoicesData, isLoading: isLoadingInvoices } = useGetInvoicesQuery(
     { limit: 5, offset: 0 },
     { skip: !isAuthenticated, refetchOnMountOrArgChange: true }
   );
 
+  const [downloadAudio] = useDownloadAudioMutation();
+
   const recentTracks = tracksData?.data || [];
   const recentInvoices = invoicesData?.invoices || [];
+  const totalTracksCount = audioCountData?.count || 0;
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -88,6 +98,8 @@ const UserProfile = () => {
   // Audio playback state
   const [playingId, setPlayingId] = useState(null);
   const [audioRefs, setAudioRefs] = useState({});
+  const [audioProgress, setAudioProgress] = useState({}); // { id: { currentTime, duration } }
+  const progressUpdateIntervalRef = useRef(null);
 
   // Invoice detail modal state
   const [selectedInvoice, setSelectedInvoice] = useState(null);
@@ -142,8 +154,20 @@ const UserProfile = () => {
 
       if (!audioRefs[id] && audioUrl) {
         const audio = new Audio(audioUrl);
-        audio.onended = () => setPlayingId(null);
+        audio.onended = () => {
+          setPlayingId(null);
+          setAudioProgress((prev) => ({
+            ...prev,
+            [id]: { currentTime: 0, duration: prev[id]?.duration || 0 },
+          }));
+        };
         audio.onerror = () => setPlayingId(null);
+        audio.onloadedmetadata = () => {
+          setAudioProgress((prev) => ({
+            ...prev,
+            [id]: { currentTime: 0, duration: audio.duration },
+          }));
+        };
         setAudioRefs((prev) => ({ ...prev, [id]: audio }));
         audio.play().catch(() => setPlayingId(null));
       } else if (audioRefs[id]) {
@@ -152,6 +176,92 @@ const UserProfile = () => {
       setPlayingId(id);
     }
   };
+
+  // Handle progress bar seeking
+  const handleSeek = (id, newTime) => {
+    if (audioRefs[id]) {
+      audioRefs[id].currentTime = newTime;
+      setAudioProgress((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], currentTime: newTime },
+      }));
+    }
+  };
+
+  // Download audio
+  const handleDownload = async (id, audioUrl, title) => {
+    try {
+      // Check if user can download (frontend check for UX)
+      if (!userProfile?.canDownload) {
+        return;
+      }
+
+      // Call backend download endpoint
+      const result = await downloadAudio(id).unwrap();
+      const downloadUrl = result.downloadUrl || result.audioUrl;
+      
+      if (!downloadUrl) {
+        return;
+      }
+
+      // Fetch and download the file
+      const response = await fetch(downloadUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title || "music"}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      // Error toast will be shown by baseQueryWithToast for API errors
+      console.error("Failed to download audio:", err);
+    }
+  };
+
+  // Update audio progress while playing
+  useEffect(() => {
+    if (!playingId || !audioRefs[playingId]) {
+      if (progressUpdateIntervalRef.current) {
+        clearInterval(progressUpdateIntervalRef.current);
+        progressUpdateIntervalRef.current = null;
+      }
+      return;
+    }
+
+    const audio = audioRefs[playingId];
+    const updateProgress = () => {
+      if (audio) {
+        setAudioProgress((prev) => ({
+          ...prev,
+          [playingId]: {
+            currentTime: audio.currentTime,
+            duration: audio.duration || 0,
+          },
+        }));
+      }
+    };
+
+    // Update immediately
+    updateProgress();
+
+    // Update every 100ms for smooth progress bar
+    progressUpdateIntervalRef.current = setInterval(updateProgress, 100);
+
+    // Listen to timeupdate event for more accurate updates
+    audio.addEventListener("timeupdate", updateProgress);
+    audio.addEventListener("loadedmetadata", updateProgress);
+
+    return () => {
+      if (progressUpdateIntervalRef.current) {
+        clearInterval(progressUpdateIntervalRef.current);
+      }
+      audio.removeEventListener("timeupdate", updateProgress);
+      audio.removeEventListener("loadedmetadata", updateProgress);
+    };
+  }, [playingId, audioRefs]);
 
   // Cleanup audio refs on unmount
   useEffect(() => {
@@ -162,6 +272,9 @@ const UserProfile = () => {
           audio.src = '';
         }
       });
+      if (progressUpdateIntervalRef.current) {
+        clearInterval(progressUpdateIntervalRef.current);
+      }
     };
   }, []);
 
@@ -175,7 +288,7 @@ const UserProfile = () => {
     if (invoice.pdfUrl) {
       window.open(invoice.pdfUrl, "_blank");
     } else {
-      const pdfUrl = `${process.env.REACT_APP_API_BASE_URL || ""}/v1/invoices/${invoice.id}/pdf`;
+      const pdfUrl = `${API_BASE_URL}/v1/invoices/${invoice.id}/pdf`;
       window.open(pdfUrl, "_blank");
     }
   };
@@ -422,7 +535,7 @@ const UserProfile = () => {
 
               {/* Stats */}
               <div className="grid grid-cols-2 gap-3">
-                <StatCard value={recentTracks.length} label="Tracks" />
+                <StatCard value={Math.floor(totalTracksCount / 2)} label="Tracks" />
                 <StatCard value={userProfile.generationCredits} label="Credits" />
               </div>
 
@@ -473,6 +586,11 @@ const UserProfile = () => {
                 {recentTracks.slice(0, 6).map((track, index) => {
                   const audioUrl = track.audioUrl || track.streamAudioUrl;
                   const isPlaying = playingId === track.audioId;
+                  const progress = audioProgress[track.audioId] || { currentTime: 0, duration: track.duration || 0 };
+                  const progressPercent = progress.duration > 0 
+                    ? (progress.currentTime / progress.duration) * 100 
+                    : 0;
+                  const hasAudioLoaded = audioRefs[track.audioId] || progress.duration > 0;
 
                   return (
                     <motion.div
@@ -481,45 +599,90 @@ const UserProfile = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.1 * index }}
                       whileHover={{ y: -8, scale: 1.02 }}
-                      className="group relative backdrop-blur-xl bg-white/5 rounded-3xl overflow-hidden border border-white/10 shadow-xl"
+                      className="group relative backdrop-blur-xl bg-white/5 rounded-3xl overflow-hidden border border-white/10 shadow-xl flex flex-col"
                       style={{
                         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                       }}
                     >
-                      {/* Image with overlay */}
-                      <div className="relative aspect-square overflow-hidden">
-                        <img
-                          src={track.imageUrl}
-                          alt={track.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                        
-                        {/* Play Button */}
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => audioUrl && togglePlay(track.audioId, audioUrl)}
-                          disabled={!audioUrl}
-                          className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/50 transition-all duration-300 backdrop-blur-sm"
-                        >
-                          <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-xl">
-                            {isPlaying ? (
-                              <Pause className="w-8 h-8 text-white" />
-                            ) : (
-                              <Play className="w-8 h-8 text-white ml-1" />
-                            )}
+                      {/* Image */}
+                      <div className="relative overflow-hidden">
+                        {track.imageUrl ? (
+                          <img
+                            src={track.imageUrl}
+                            alt={track.title}
+                            className="w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                        ) : (
+                          <div className="w-full aspect-square bg-gradient-to-br from-blue-500/50 to-purple-500/50 flex items-center justify-center">
+                            <Music className="w-12 h-12 sm:w-16 sm:h-16 text-white/60" />
                           </div>
-                        </motion.button>
+                        )}
                       </div>
 
                       {/* Track Info */}
-                      <div className="p-4 sm:p-5">
-                        <h3 className="font-bold text-white truncate mb-2 text-lg">{track.title}</h3>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-white/60">{track.modelName || 'Music'}</span>
-                          {track.duration && (
-                            <span className="text-white/60">{formatDuration(track.duration)}</span>
+                      <div className="p-4 sm:p-5 flex flex-col gap-2 flex-1">
+                        <h3 className="font-bold text-white truncate text-lg">{track.title}</h3>
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-gray-300 min-w-0">
+                          <span 
+                            className="px-2 py-1 rounded text-xs truncate max-w-[60%] sm:max-w-[70%]" 
+                            title={track.modelName || 'Music'}
+                            style={{ backgroundColor: `${THEME_ACCENT}30` }}
+                          >
+                            {track.modelName || 'Music'}
+                          </span>
+                          <span className="flex-shrink-0">•</span>
+                          <span className="tabular-nums flex-shrink-0 text-white/60">{formatDuration(progress.duration)}</span>
+                        </div>
+
+                        {/* Audio Progress Bar */}
+                        {hasAudioLoaded && (
+                          <div className="w-full my-2 sm:my-3 px-0.5">
+                            <div className="w-full flex items-center gap-1.5 sm:gap-2 min-w-0">
+                              <span className="text-xs text-white/60 flex-shrink-0 text-right tabular-nums w-[2rem] sm:w-[2.5rem]">
+                                {formatDuration(progress.currentTime)}
+                              </span>
+                              <input
+                                type="range"
+                                min={0}
+                                max={progress.duration || 0}
+                                value={progress.currentTime || 0}
+                                onChange={(e) => handleSeek(track.audioId, parseFloat(e.target.value))}
+                                className="flex-1 min-w-0 h-0.5 sm:h-1 cursor-pointer"
+                                style={{ 
+                                  accentColor: THEME_ACCENT,
+                                  background: `linear-gradient(to right, ${THEME_ACCENT} 0%, ${THEME_ACCENT} ${progressPercent}%, rgb(75 85 99) ${progressPercent}%, rgb(75 85 99) 100%)`
+                                }}
+                              />
+                              <span className="text-xs text-white/60 flex-shrink-0 tabular-nums w-[2rem] sm:w-[2.5rem]">
+                                {formatDuration(progress.duration)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Controls */}
+                        <div className="flex justify-between items-center mt-auto pt-2">
+                          <button 
+                            onClick={() => audioUrl && togglePlay(track.audioId, audioUrl)}
+                            className="text-white hover:text-white/80 transition p-1.5 sm:p-2 hover:bg-white/10 rounded-lg flex-shrink-0"
+                            style={{ color: THEME_ACCENT }}
+                            aria-label={isPlaying ? "Pause" : "Play"}
+                          >
+                            {isPlaying ? (
+                              <Pause className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                            ) : (
+                              <Play className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                            )}
+                          </button>
+                          {userProfile?.canDownload && (
+                            <button
+                              onClick={() => handleDownload(track.audioId, audioUrl, track.title)}
+                              className="text-white/60 hover:text-white transition p-1.5 sm:p-2 hover:bg-white/10 rounded-lg flex-shrink-0"
+                              title="Download"
+                              aria-label="Download"
+                            >
+                              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+                            </button>
                           )}
                         </div>
                       </div>

@@ -47,6 +47,10 @@ export const generationApi = createApi({
       query: () => "/user/credits",
       providesTags: ["UserCredits"],
     }),
+    getUserAudioCount: builder.query({
+      query: () => "/audio/count",
+      providesTags: ["AudioResult"],
+    }),
     downloadAudio: builder.mutation({
       query: (audioId) => ({
         url: `/audio/${audioId}/download`,
@@ -62,6 +66,7 @@ export const {
   useLazyGetTaskQuery,
   useGetUserAudioQuery,
   useGetUserCreditsQuery,
+  useGetUserAudioCountQuery,
   useDownloadAudioMutation,
 } = generationApi;
 

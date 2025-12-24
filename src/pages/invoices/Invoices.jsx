@@ -6,6 +6,7 @@ import { useGetInvoicesQuery } from "../../services/api/invoiceApi";
 import InvoiceCard from "../../components/InvoiceCard";
 import InvoiceDetail from "../../components/InvoiceDetail";
 import { FileText, Loader2, AlertCircle } from "lucide-react";
+import { API_BASE_URL } from "../../config/api";
 
 const Invoices = () => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const Invoices = () => {
       window.open(invoice.pdfUrl, "_blank");
     } else {
       // Fallback: use API endpoint
-      const pdfUrl = `${process.env.REACT_APP_API_BASE_URL || ""}/v1/invoices/${invoice.id}/pdf`;
+      const pdfUrl = `${API_BASE_URL}/v1/invoices/${invoice.id}/pdf`;
       window.open(pdfUrl, "_blank");
     }
   };
