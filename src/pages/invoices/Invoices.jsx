@@ -22,7 +22,7 @@ const Invoices = () => {
     refetch,
   } = useGetInvoicesQuery(
     { limit, offset },
-    { skip: !isAuthenticated }
+    { skip: !isAuthenticated, refetchOnMountOrArgChange: true }
   );
 
   // Redirect if not authenticated

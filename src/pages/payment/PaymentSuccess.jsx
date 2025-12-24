@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useGetUserCreditsQuery } from "../../services/api/generationApi";
+import { userApi } from "../../services/api/userApi";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const isAuthenticated = useSelector((state) => state.auth?.isAuthenticated);
@@ -13,14 +15,17 @@ const PaymentSuccess = () => {
   // Fetch updated credits if authenticated
   const { data: creditsData, refetch, isLoading: creditsLoading } = useGetUserCreditsQuery(undefined, {
     skip: !isAuthenticated,
+    refetchOnMountOrArgChange: true,
   });
 
   useEffect(() => {
     if (isAuthenticated && sessionId) {
+      // Invalidate User tag to ensure profile updates after payment
+      dispatch(userApi.util.invalidateTags(["User"]));
       // Refetch credits to show updated balance
       refetch();
     }
-  }, [sessionId, isAuthenticated, refetch]);
+  }, [sessionId, isAuthenticated, refetch, dispatch]);
 
   useEffect(() => {
     const timer = setInterval(() => {

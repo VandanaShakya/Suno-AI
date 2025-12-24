@@ -26,7 +26,7 @@ export const generationApi = createApi({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["GenerationTask"],
+      invalidatesTags: ["GenerationTask", "AudioResult", "UserCredits"],
     }),
     getTask: builder.query({
       query: (taskId) => `/tasks/${taskId}`,

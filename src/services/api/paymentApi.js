@@ -18,7 +18,7 @@ export const paymentApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["UserCredits"],
+  tagTypes: ["UserCredits", "User"],
 
   endpoints: (builder) => ({
     createCheckoutSession: builder.mutation({
@@ -27,7 +27,7 @@ export const paymentApi = createApi({
         method: "POST",
         body: { plan: planType },
       }),
-      invalidatesTags: ["UserCredits"],
+      invalidatesTags: ["UserCredits", "User"],
     }),
   }),
 });

@@ -13,6 +13,7 @@ const Pricing = () => {
   const isAuthenticated = useSelector((state) => state.auth?.isAuthenticated);
   const { data: userProfile } = useGetUserProfileQuery(undefined, {
     skip: !isAuthenticated,
+    refetchOnMountOrArgChange: true,
   });
 
   return (

@@ -137,7 +137,10 @@ export default function MyAlbum() {
     }
   );
   const [downloadAudio] = useDownloadAudioMutation();
-  const { data: userProfile } = useGetUserProfileQuery(undefined, { skip: !isAuthenticated });
+  const { data: userProfile } = useGetUserProfileQuery(undefined, { 
+    skip: !isAuthenticated,
+    refetchOnMountOrArgChange: true,
+  });
 
   // Redirect if not authenticated
   useEffect(() => {

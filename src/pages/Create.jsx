@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import images from "../assets/images";
-import { Play, Pause, Bookmark, Share2, Loader2, Download, AlertCircle } from "lucide-react";
+import { Play, Pause, Bookmark, Share2, Loader2, Download, AlertCircle, Music } from "lucide-react";
 import { useGenerateMusicMutation, useLazyGetTaskQuery, useDownloadAudioMutation } from "../services/api/generationApi";
 import { useGetUserProfileQuery } from "../services/api/userApi";
+import { createSSEClient } from "../utils/sseClient";
+import { getToken } from "../utils/tokenStorage";
 
 const models = [
   { value: "V4", label: "V4 (Max 4 min, improved vocal quality)" },
@@ -76,15 +78,22 @@ export default function Create() {
   const [error, setError] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("");
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [failedImages, setFailedImages] = useState(new Set()); // Track images that failed to load
   const startTimeRef = useRef(null);
-  const pollingIntervalRef = useRef(null);
+  const sseClientRef = useRef(null);
+  const pollingIntervalRef = useRef(null); // Fallback polling
   const progressUpdateIntervalRef = useRef(null);
   const messageIntervalRef = useRef(null);
+  const pendingCompletionRef = useRef(false); // Track if we're waiting to complete
+  const [usePollingFallback, setUsePollingFallback] = useState(false);
 
   const [generateMusic, { isLoading: isGenerating }] = useGenerateMusicMutation();
   const [getTask, { data: taskData, isLoading: isPolling }] = useLazyGetTaskQuery();
   const [downloadAudio] = useDownloadAudioMutation();
-  const { data: userProfile } = useGetUserProfileQuery(undefined, { skip: !isAuthenticated });
+  const { data: userProfile } = useGetUserProfileQuery(undefined, { 
+    skip: !isAuthenticated,
+    refetchOnMountOrArgChange: true,
+  });
 
   const handleModeSelection = (mode) => {
     if (mode === "custom") {
@@ -188,12 +197,19 @@ export default function Create() {
       return;
     }
 
+    // Clear any previous state
     setError("");
-    setProgress(0);
+    setProgress(1); // Start at 1% to show progress has begun
     setStatus("pending");
     setCurrentMessageIndex(0);
     setLoadingMessage(loadingMessages[0]);
     startTimeRef.current = Date.now();
+    // Don't clear generatedMusic - keep previous songs visible
+    // Clear the completed status when starting a new generation
+    if (status === "completed") {
+      setStatus("pending");
+      setProgress(1);
+    }
 
     try {
     const payload = {
@@ -223,8 +239,8 @@ export default function Create() {
       const result = await generateMusic(payload).unwrap();
       setCurrentTaskId(result.taskId);
       
-      // Start polling
-      startPolling(result.taskId);
+      // Start SSE connection for real-time updates
+      startSSE(result.taskId);
     } catch (err) {
       setError(err?.data?.error?.message || err?.message || "Failed to start generation");
       setStatus("");
@@ -232,19 +248,177 @@ export default function Create() {
     }
   };
 
-  const startPolling = (taskId) => {
+  const handleTaskUpdate = (taskData) => {
+    const taskStatus = taskData.status;
+    console.log("handleTaskUpdate called with status:", taskStatus, "audioResults:", taskData.audioResults?.length);
+
+    // Progress is now updated continuously via useEffect, so we don't need to update it here
+    // unless the task is completed or failed
+
+    if (taskStatus === "completed") {
+      // Stop SSE connection
+      stopSSE();
+      
+      // Mark that we're pending completion - useEffect will handle status update
+      pendingCompletionRef.current = true;
+      
+      // Map audio results to card format and add to generated music FIRST
+      // The useEffect will detect the change and update status accordingly
+      if (taskData.audioResults && taskData.audioResults.length > 0) {
+        const mappedMusic = taskData.audioResults.map((audio) => ({
+          id: audio.audioId,
+          title: audio.title,
+          image: audio.imageUrl || "", // Ensure imageUrl is a string, default to empty if missing
+          artist: "AI Generated",
+          duration: audio.duration, // Keep as seconds for progress tracking
+          durationFormatted: formatDuration(audio.duration),
+          style: audio.tags || style,
+          audioUrl: audio.audioUrl || audio.streamAudioUrl,
+          streamAudioUrl: audio.streamAudioUrl,
+        }));
+        
+        console.log("Mapped music:", mappedMusic);
+        
+        // Use functional update to ensure we're working with latest state
+        setGeneratedMusic((prev) => {
+          // Check if these songs are already added (avoid duplicates)
+          const existingIds = new Set(prev.map(m => m.id));
+          const newSongs = mappedMusic.filter(m => !existingIds.has(m.id));
+          const updated = [...newSongs, ...prev];
+          console.log("Adding songs to generatedMusic:", newSongs.length, "Total:", updated.length);
+          console.log("Updated generatedMusic:", updated);
+          return updated;
+        });
+      } else {
+        console.warn("No audioResults in completed task:", taskData);
+        // Even if no audio results, mark as completed immediately
+        setProgress(100);
+        setStatus("completed");
+        setLoadingMessage("Complete! 🎉");
+        pendingCompletionRef.current = false;
+      }
+      
+      // Clear task ID and loading message after showing completion, but keep status
+      // Status will remain "completed" so songs stay visible until next generation
+      setTimeout(() => {
+        setCurrentTaskId(null);
+        setLoadingMessage("");
+        // Don't clear status or progress - they keep songs visible
+      }, 2000);
+    } else if (taskStatus === "failed") {
+      stopSSE();
+      setError(taskData.errorMessage || "Generation failed");
+      setStatus("");
+      setProgress(0);
+      setLoadingMessage("");
+      setCurrentTaskId(null);
+      pendingCompletionRef.current = false;
+    } else if (taskStatus === "processing" || taskStatus === "pending") {
+      // Update status for non-completed states
+      setStatus(taskStatus);
+      // Ensure loading state is active
+      if (!loadingMessage) {
+        setLoadingMessage(loadingMessages[0]);
+      }
+    }
+  };
+
+  const startSSE = (taskId) => {
+    // Close any existing SSE connection
+    if (sseClientRef.current) {
+      sseClientRef.current.close();
+    }
+
+    // Stop any fallback polling
+    stopPolling();
+
+    const token = getToken();
+    if (!token) {
+      console.error("No token available for SSE connection");
+      startPollingFallback(taskId);
+      return;
+    }
+
+    // Create SSE client
+    const sseClient = createSSEClient(taskId, token, {
+      onMessage: (taskData) => {
+        // Handle task update from SSE
+        handleTaskUpdate(taskData);
+      },
+      onError: (error) => {
+        console.error("SSE error:", error);
+        // Fallback to polling on error
+        if (!usePollingFallback) {
+          startPollingFallback(taskId);
+        }
+      },
+      onOpen: () => {
+        console.log("SSE connection opened");
+        setUsePollingFallback(false);
+        // Fetch current task status immediately to ensure UI is up to date
+        getTask(taskId).unwrap()
+          .then((taskData) => {
+            if (taskData) {
+              handleTaskUpdate(taskData);
+            } else if (status === "pending" || status === "") {
+              setStatus("processing");
+            }
+          })
+          .catch((err) => {
+            console.error("Failed to fetch initial task status:", err);
+            if (status === "pending" || status === "") {
+              setStatus("processing");
+            }
+          });
+      },
+      onClose: () => {
+        console.log("SSE connection closed");
+      },
+      fallbackCallback: () => {
+        // SSE failed, use polling fallback
+        setUsePollingFallback(true);
+        startPollingFallback(taskId);
+      },
+    });
+
+    sseClientRef.current = sseClient;
+    sseClient.connect();
+  };
+
+  const startPollingFallback = (taskId) => {
     // Clear any existing polling
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
     }
 
+    setUsePollingFallback(true);
+    console.log("Using polling fallback for task updates");
+
     // Poll immediately
     getTask(taskId);
 
-    // Set up polling interval (every 4 seconds)
-    pollingIntervalRef.current = setInterval(() => {
+    // Set up polling interval with exponential backoff
+    let pollDelay = 4000; // Start with 4 seconds
+    let pollCount = 0;
+    const maxPollDelay = 16000; // Max 16 seconds
+
+    const poll = () => {
       getTask(taskId);
-    }, 4000);
+      pollCount++;
+      
+      // Increase delay gradually (4s, 8s, 16s, then stay at 16s)
+      if (pollCount < 3) {
+        pollDelay = Math.min(pollDelay * 2, maxPollDelay);
+      }
+    };
+
+    // Poll immediately
+    poll();
+
+    // Set up polling interval
+    pollingIntervalRef.current = setInterval(() => {
+      poll();
+    }, pollDelay);
   };
 
   const stopPolling = () => {
@@ -254,8 +428,16 @@ export default function Create() {
     }
   };
 
+  const stopSSE = () => {
+    if (sseClientRef.current) {
+      sseClientRef.current.close();
+      sseClientRef.current = null;
+    }
+    stopPolling();
+  };
+
   // Calculate isProcessing before useEffects
-  const isProcessing = isGenerating || isPolling || (currentTaskId && status !== "completed" && status !== "failed");
+  const isProcessing = isGenerating || (usePollingFallback && isPolling) || (currentTaskId && status !== "completed" && status !== "failed" && status !== "");
 
   // Progress loading messages sequentially (each shows only once)
   useEffect(() => {
@@ -295,52 +477,45 @@ export default function Create() {
     };
   }, [isProcessing]);
 
-  // Handle task data updates
+  // Continuously update progress based on elapsed time while processing
   useEffect(() => {
-    if (!taskData) return;
-
-    const taskStatus = taskData.status;
-    setStatus(taskStatus);
-
-    // Update progress based on elapsed time (estimate 3-4 minutes = 180-240 seconds)
-    if (startTimeRef.current) {
-      const elapsed = (Date.now() - startTimeRef.current) / 1000; // seconds
-      const estimatedTotal = 210; // 3.5 minutes average
-      const calculatedProgress = Math.min(95, (elapsed / estimatedTotal) * 100);
-      setProgress(calculatedProgress);
+    if (!isProcessing || !startTimeRef.current) {
+      return;
     }
 
-    if (taskStatus === "completed") {
-      stopPolling();
-      setProgress(100);
-      setLoadingMessage("Complete! 🎉");
-      
-      // Map audio results to card format
-      if (taskData.audioResults && taskData.audioResults.length > 0) {
-        const mappedMusic = taskData.audioResults.map((audio) => ({
-          id: audio.audioId,
-          title: audio.title,
-          image: audio.imageUrl,
-        artist: "AI Generated",
-          duration: audio.duration, // Keep as seconds for progress tracking
-          durationFormatted: formatDuration(audio.duration),
-          style: audio.tags || style,
-          audioUrl: audio.audioUrl || audio.streamAudioUrl,
-          streamAudioUrl: audio.streamAudioUrl,
-        }));
-        setGeneratedMusic((prev) => [...mappedMusic, ...prev]);
+    // Update progress every second
+    const progressInterval = setInterval(() => {
+      if (startTimeRef.current && status !== "completed" && status !== "failed") {
+        const elapsed = (Date.now() - startTimeRef.current) / 1000; // seconds
+        const estimatedTotal = 210; // 3.5 minutes average
+        const calculatedProgress = Math.min(95, (elapsed / estimatedTotal) * 100);
+        setProgress(calculatedProgress);
       }
-      setCurrentTaskId(null);
-      setStatus("");
-    } else if (taskStatus === "failed") {
-      stopPolling();
-      setError(taskData.errorMessage || "Generation failed");
-      setStatus("");
-      setProgress(0);
-      setLoadingMessage("");
-      setCurrentTaskId(null);
+    }, 1000); // Update every second
+
+    return () => {
+      clearInterval(progressInterval);
+    };
+  }, [isProcessing, status]);
+
+  // Handle task data updates (from polling fallback)
+  useEffect(() => {
+    if (!taskData || !usePollingFallback) return;
+
+    // Only process taskData if we're using polling fallback
+    handleTaskUpdate(taskData);
+  }, [taskData, style, usePollingFallback]);
+
+  // Ensure status is updated after generatedMusic changes when pending completion
+  useEffect(() => {
+    if (pendingCompletionRef.current && generatedMusic.length > 0 && status !== "completed") {
+      console.log("useEffect: Setting status to completed after generatedMusic was updated. generatedMusic.length:", generatedMusic.length);
+      setProgress(100);
+      setStatus("completed");
+      setLoadingMessage("Complete! 🎉");
+      pendingCompletionRef.current = false;
     }
-  }, [taskData, style]);
+  }, [generatedMusic, status]);
 
   // Update audio progress while playing
   useEffect(() => {
@@ -384,10 +559,10 @@ export default function Create() {
     };
   }, [playingId, audioRefs]);
 
-  // Cleanup polling on unmount
+  // Cleanup SSE and polling on unmount
   useEffect(() => {
     return () => {
-      stopPolling();
+      stopSSE();
       if (progressUpdateIntervalRef.current) {
         clearInterval(progressUpdateIntervalRef.current);
       }
@@ -790,17 +965,36 @@ export default function Create() {
                   const isPlaying = playingId === m.id;
                   const hasAudioLoaded = audioRefs[m.id] || progress.duration > 0;
 
+                  const imageFailed = failedImages.has(m.id);
+                  const hasValidImage = m.image && m.image.trim() !== "" && !imageFailed;
+
                   return (
                     <div key={m.id} className="relative bg-white/10 backdrop-blur-lg rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-white/20 hover:scale-105 transition group flex flex-col">
-                    <img src={m.image} alt={m.title} className="w-full h-40 sm:h-48 object-cover" />
+                    {hasValidImage ? (
+                      <img 
+                        src={m.image} 
+                        alt={m.title} 
+                        className="w-full h-40 sm:h-48 object-cover"
+                        onError={(e) => {
+                          console.error("Image failed to load:", m.image, "for track:", m.title);
+                          setFailedImages((prev) => new Set([...prev, m.id]));
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-40 sm:h-48 bg-gradient-to-br from-purple-600/50 to-pink-600/50 flex items-center justify-center">
+                        <Music className="w-12 h-12 sm:w-16 sm:h-16 text-white/60" />
+                      </div>
+                    )}
                       
                       <div className="p-3 sm:p-4 flex flex-col gap-2 flex-1">
                         <h3 className="font-semibold text-sm sm:text-base md:text-lg truncate">{m.title}</h3>
                         <span className="text-gray-400 text-[10px] sm:text-xs md:text-sm">{m.artist}</span>
-                        <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs md:text-sm text-gray-300 flex-wrap">
-                          <span className="bg-purple-500/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs">{m.style}</span>
-                        <span>•</span>
-                          <span className="tabular-nums">{m.durationFormatted || formatDuration(progress.duration)}</span>
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs md:text-sm text-gray-300 min-w-0">
+                          <span className="bg-purple-500/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[10px] sm:text-xs truncate max-w-[60%] sm:max-w-[70%]" title={m.style || "Music"}>
+                            {m.style || "Music"}
+                          </span>
+                          <span className="flex-shrink-0">•</span>
+                          <span className="tabular-nums flex-shrink-0">{m.durationFormatted || formatDuration(progress.duration)}</span>
                         </div>
 
                         {/* Audio Progress Bar - Centered horizontally in middle */}

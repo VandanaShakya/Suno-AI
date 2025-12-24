@@ -48,18 +48,19 @@ const UserProfile = () => {
   // Fetch user profile
   const { data: userProfile, isLoading: isLoadingProfile, error: profileError } = useGetUserProfileQuery(undefined, {
     skip: !isAuthenticated,
+    refetchOnMountOrArgChange: true,
   });
 
   // Fetch recent tracks (limit to 6 for profile page)
   const { data: tracksData, isLoading: isLoadingTracks } = useGetUserAudioQuery(
     { limit: 6, cursor: undefined },
-    { skip: !isAuthenticated }
+    { skip: !isAuthenticated, refetchOnMountOrArgChange: true }
   );
 
   // Fetch recent invoices (limit to 5 for profile page)
   const { data: invoicesData, isLoading: isLoadingInvoices } = useGetInvoicesQuery(
     { limit: 5, offset: 0 },
-    { skip: !isAuthenticated }
+    { skip: !isAuthenticated, refetchOnMountOrArgChange: true }
   );
 
   const recentTracks = tracksData?.data || [];
@@ -240,7 +241,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ backgroundColor: PAGE_BG }}>
+    <div className="mt-10 min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden" style={{ backgroundColor: PAGE_BG }}>
       {/* Animated background gradients */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] animate-pulse" />
