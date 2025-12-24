@@ -63,7 +63,7 @@ const Invoices = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#131B27] py-8 px-4">
+    <div className=" mt-10 min-h-screen bg-[#131B27] py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
@@ -77,7 +77,7 @@ const Invoices = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-white">Invoices</h1>
-              <p className="text-gray-400">View and download your payment invoices</p>
+              <p className="text-gray-400">View your payment invoices</p>
             </div>
           </div>
         </motion.div>

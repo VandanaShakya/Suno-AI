@@ -56,7 +56,7 @@ const loadingMessages = [
 export default function Create() {
   const isAuthenticated = useSelector((state) => state.auth?.isAuthenticated);
   const [customMode, setCustomMode] = useState(false);
-  const [modeSelected, setModeSelected] = useState(false);
+  const [modeSelected, setModeSelected] = useState(true);
   const [instrumental, setInstrumental] = useState(true);
   const [model, setModel] = useState("V4");
   const [prompt, setPrompt] = useState("");
@@ -111,7 +111,9 @@ export default function Create() {
   // Validation helper
   const validateForm = () => {
     setError("");
-    const limits = MODEL_LIMITS[model];
+    // V4 limits: prompt: 3000, style: 200
+    const V4_PROMPT_LIMIT = 3000;
+    const V4_STYLE_LIMIT = 200;
 
     if (!modeSelected) {
       setError("Please select a mode first");
@@ -133,8 +135,8 @@ export default function Create() {
           setError("Prompt should not be provided when instrumental is true");
           return false;
         }
-        if (style.length > limits.style) {
-          setError(`Style must be at most ${limits.style} characters for model ${model}`);
+        if (style.length > V4_STYLE_LIMIT) {
+          setError(`Style must be at most ${V4_STYLE_LIMIT} characters`);
           return false;
         }
       } else {
@@ -151,12 +153,12 @@ export default function Create() {
           setError("Title is required in custom mode");
           return false;
         }
-        if (prompt.length > limits.prompt) {
-          setError(`Prompt must be at most ${limits.prompt} characters for model ${model}`);
+        if (prompt.length > V4_PROMPT_LIMIT) {
+          setError(`Prompt must be at most ${V4_PROMPT_LIMIT} characters`);
           return false;
         }
-        if (style.length > limits.style) {
-          setError(`Style must be at most ${limits.style} characters for model ${model}`);
+        if (style.length > V4_STYLE_LIMIT) {
+          setError(`Style must be at most ${V4_STYLE_LIMIT} characters`);
           return false;
         }
       }
@@ -671,7 +673,6 @@ export default function Create() {
     }
   };
 
-  const limits = MODEL_LIMITS[model];
   const showPrompt = !customMode || !instrumental;
 
   return (
@@ -698,13 +699,13 @@ export default function Create() {
               </h2>
               
               {/* Mode Selection Toggles */}
-              <div className="flex flex-col gap-3 w-full sm:w-auto">
+              <div className="flex flex-row gap-4 sm:gap-6 w-full sm:w-auto items-center">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <span className="text-sm font-medium whitespace-nowrap">Instrumental</span>
                   <button
                     onClick={() => handleModeSelection("instrumental")}
                     disabled={isProcessing}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition flex-shrink-0 ${
                       instrumental ? "bg-purple-600" : "bg-gray-600"
                     } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
@@ -721,7 +722,7 @@ export default function Create() {
                   <button
                     onClick={() => handleModeSelection("custom")}
                     disabled={isProcessing}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition flex-shrink-0 ${
                       customMode ? "bg-pink-600" : "bg-gray-600"
                     } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
@@ -735,32 +736,13 @@ export default function Create() {
               </div>
             </div>
 
-            {/* Model Selector */}
-            <div className="mb-4">
-              <label className="block mb-2 font-medium text-sm sm:text-base">
-                Model <span className="text-red-400">*</span>
-              </label>
-              <select
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                disabled={isProcessing}
-                className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {models.map((m) => (
-                  <option key={m.value} value={m.value} className="bg-[#39355C]">
-                    {m.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Prompt */}
             {showPrompt && (
               <div className="mb-4">
                 <label className="block mb-2 font-medium text-sm sm:text-base">
                   Prompt <span className="text-red-400">*</span>
                   <span className="text-xs sm:text-sm text-gray-400 ml-2">
-                    ({prompt.length}/{customMode ? limits.prompt : 500})
+                    ({prompt.length}/{customMode ? 3000 : 500})
                   </span>
               </label>
               <textarea
@@ -771,7 +753,7 @@ export default function Create() {
                   }
                 value={prompt}
                   onChange={(e) => {
-                    const maxLength = customMode ? limits.prompt : 500;
+                    const maxLength = customMode ? 3000 : 500;
                     setPrompt(e.target.value.slice(0, maxLength));
                   }}
                   disabled={isProcessing}
@@ -787,14 +769,14 @@ export default function Create() {
                   <label className="block mb-2 font-medium text-sm sm:text-base">
                     Style <span className="text-red-400">*</span>
                     <span className="text-xs sm:text-sm text-gray-400 ml-2">
-                      ({style.length}/{limits.style})
+                      ({style.length}/200)
                     </span>
                   </label>
                   <input
                     type="text"
                     placeholder="e.g., Synthwave, Lo-Fi, Electronic (comma-separated or space-separated)"
                     value={style}
-                    onChange={(e) => setStyle(e.target.value.slice(0, limits.style))}
+                    onChange={(e) => setStyle(e.target.value.slice(0, 200))}
                     disabled={isProcessing}
                     className="w-full p-3 rounded-xl bg-white/5 border border-white/10 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                   />

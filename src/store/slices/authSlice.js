@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getToken, setToken, setRefreshToken, clearTokens } from "../../utils/tokenStorage";
+import { getToken, getRefreshToken, setToken, setRefreshToken, clearTokens } from "../../utils/tokenStorage";
 
 const initialState = {
   user: null,
   token: getToken(),
-  refreshToken: null,
+  refreshToken: getRefreshToken(),
   isAuthenticated: !!getToken(),
 };
 
