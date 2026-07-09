@@ -234,6 +234,23 @@ class FetchSSEClient {
           }
         }
       }
+
+      // Stream closed cleanly by the server (EOF)
+      this.isConnected = false;
+      if (this.shouldReconnect && this.reconnectAttempts < this.maxReconnectAttempts) {
+        this.reconnectAttempts++;
+        console.log(`SSE connection closed cleanly. Reconnecting attempt ${this.reconnectAttempts} in ${this.reconnectDelay * this.reconnectAttempts}ms...`);
+        setTimeout(() => {
+          if (this.shouldReconnect) {
+            this.connect();
+          }
+        }, this.reconnectDelay * this.reconnectAttempts);
+      } else if (this.shouldReconnect) {
+        if (this.onError) {
+          this.onError(new Error("SSE connection closed cleanly, max reconnect attempts reached"));
+        }
+        this.startFallback();
+      }
     } catch (error) {
       if (error.name === "AbortError") {
         // Connection was intentionally closed
